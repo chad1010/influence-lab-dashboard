@@ -1316,6 +1316,7 @@
                 <button class="tab-btn active" onclick="switchTab('writer', 'w-tab1', this)">역할 소개</button>
                 <button class="tab-btn" onclick="switchTab('writer', 'w-tab2', this)">게시물 작성법</button>
                 <button class="tab-btn" onclick="switchTab('writer', 'w-tab3', this)">전환하는 글</button>
+                <button class="tab-btn" onclick="switchTab('writer', 'w-tab7', this)">실전 노하우</button>
                 <button class="tab-btn" onclick="switchTab('writer', 'w-tab6', this)">주의사항</button>
                 <button class="tab-btn" onclick="switchTab('writer', 'w-tab4', this)">학습 자료</button>
                 <button class="tab-btn" onclick="switchTab('writer', 'w-tab5', this)">체크리스트</button>
@@ -1811,6 +1812,300 @@
                 <div class="tip-box writer">
                     <h4>💡 전환율을 높이는 비결</h4>
                     <p>빠른 판매보다는 <span class="highlight">신뢰 구축</span>에 집중하세요. 신뢰가 있으면 전환은 자동으로 따라옵니다.</p>
+                </div>
+            </div>
+
+            <!-- W-TAB 7: 실전 노하우 (레퍼런스 톡방 인사이트) -->
+            <div id="w-tab7" class="tab-content">
+                <div class="card" style="background: linear-gradient(135deg, rgba(253, 203, 110, 0.15), rgba(225, 112, 85, 0.15)); border: 1px solid var(--role-cm);">
+                    <h2 style="color: var(--role-cm); margin-top: 0;">📌 레퍼런스 톡방 실전 노하우</h2>
+                    <p>팀 내부 레퍼런스 카톡방에서 축적된 실전 인사이트입니다. (2025.11 ~ 2026.03)</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem;">실제 운영 데이터와 경험에서 나온 내용이니 꼭 숙지하세요.</p>
+                </div>
+
+                <div class="subtabs-container">
+                    <button class="subtab-btn active" onclick="switchSubtab('w-subtab7-1', this)">콘텐츠 공식</button>
+                    <button class="subtab-btn" onclick="switchSubtab('w-subtab7-2', this)">전환 & CTA</button>
+                    <button class="subtab-btn" onclick="switchSubtab('w-subtab7-3', this)">성장 사례</button>
+                    <button class="subtab-btn" onclick="switchSubtab('w-subtab7-4', this)">카드뉴스 & 포맷</button>
+                </div>
+
+                <!-- Subtab: 콘텐츠 공식 -->
+                <div id="w-subtab7-1" class="subtab-content active">
+                    <div class="section-header">
+                        <span class="section-icon">📐</span>
+                        <h2>콘텐츠 공식 & 글쓰기 원칙</h2>
+                    </div>
+
+                    <!-- 리스트형 게시물 -->
+                    <div class="card">
+                        <h3>📋 리스트형 게시물 공식</h3>
+                        <ul>
+                            <li><strong>3개 중 하나만 설명</strong> — 나머지는 댓글이 궁금하게 만들어야 함</li>
+                            <li><strong>"아래로 갈수록 중요"</strong> — 이 구조가 댓글 유도에 효과적</li>
+                            <li>마지막에 <strong>팔로우 CTA 필수</strong></li>
+                        </ul>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁 11/21</p>
+                    </div>
+
+                    <!-- 본문 길이 -->
+                    <div class="card">
+                        <h3>📏 본문 길이 원칙</h3>
+                        <ul>
+                            <li><strong>"내 피드 봐야 되는 이유"</strong> 류 게시물 → 1~2줄이 효과적</li>
+                            <li><strong>사진이 메인</strong>일 때 → 본문 2줄 넘으면 안 됨</li>
+                            <li><strong>배포자료 뿌릴 때</strong> → 본문은 후킹만, 최대한 짧게 (조회수 잘 나옴)</li>
+                        </ul>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 김윤호 11/20, 한채혁 12/9, 3/1</p>
+                    </div>
+
+                    <!-- 후킹 유형 -->
+                    <div class="card" style="border-left: 4px solid var(--role-cm);">
+                        <h3 style="color: var(--role-cm);">🎣 후킹 실전 공식</h3>
+                        <div style="margin-top: 15px;">
+                            <h4>최고의 후킹 공식</h4>
+                            <p><strong>첫줄 후킹 + 명령 + 수치(5년, 12년) + 본인 경험 + 댓글 궁금증 유도</strong></p>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <h4>잘 먹히는 후킹 패턴</h4>
+                            <ul>
+                                <li>제목에 <strong>반전</strong> 주기</li>
+                                <li>"지나치면 찾기 어렵다" — 맨 아래 후킹</li>
+                                <li><strong>유료강의 자료 후킹:</strong> "나만 알고 싶은 ~", "내부 자료인데 공개~", "직원에게만 공개했던"</li>
+                                <li><strong>"축하받을 수 있을까 / 응원받을 수 있을까"</strong> → 조회수 대비 CTA 전환 매우 좋음</li>
+                            </ul>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁, 홍가영 1/26, 2/14</p>
+                    </div>
+
+                    <!-- 스토리텔링 -->
+                    <div class="card" style="border-left: 4px solid var(--success);">
+                        <h3 style="color: var(--success);">📖 스토리텔링 핵심</h3>
+                        <ul>
+                            <li>글에 <strong>반드시 스토리 넣기</strong> (내 썰, 고객 썰, 직원 썰)</li>
+                            <li>스토리는 <strong>감정을 건드림</strong> → 없으면 억지 아닌 선에서 만들어도 됨</li>
+                            <li><strong>본인 이야기인데 남 이야기인 것처럼</strong> 쓰기도 효과적</li>
+                            <li>감정 건드리는 스토리텔링으로 <strong>커머스 매출 3배 이상</strong> 가능</li>
+                        </ul>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁 1/2, 2/23, 3/10</p>
+                    </div>
+
+                    <!-- 댓글 유도 -->
+                    <div class="card">
+                        <h3>💬 댓글 유도 기술</h3>
+                        <ul>
+                            <li><strong>공감 유도가 최고:</strong> "혹시 저만 그런가요?" → "맞아요!! 저도 그래요!!!"</li>
+                            <li>댓글 달면 <strong>나도 뭔가를 간접적으로 보여줄 수 있게</strong> 심리 설계</li>
+                            <li>계정 주제 <strong>외 다른 소재로 후킹</strong> → 메인 주제로 연결하는 방식도 잘 됨</li>
+                        </ul>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁, 김윤호 3/5, 2/21</p>
+                    </div>
+
+                    <!-- 잘 터지는 소재 -->
+                    <div class="card" style="background: linear-gradient(135deg, rgba(253, 203, 110, 0.08), rgba(225, 112, 85, 0.08));">
+                        <h3>🔥 잘 터지는 소재 패턴</h3>
+                        <div class="values-grid" style="margin-top: 15px;">
+                            <div class="value-card" style="border-color: var(--role-cm);">
+                                <div class="value-icon">💢</div>
+                                <h3>소신발언</h3>
+                                <p>바로 터짐. 강한 의견 표현</p>
+                            </div>
+                            <div class="value-card" style="border-color: var(--role-cm);">
+                                <div class="value-icon">😤</div>
+                                <h3>화나고 공감되는 썰</h3>
+                                <p>감정 공감 → 댓글 폭발</p>
+                            </div>
+                            <div class="value-card" style="border-color: var(--role-cm);">
+                                <div class="value-icon">😄</div>
+                                <h3>유쾌한 글</h3>
+                                <p>가볍고 재밌는 톤</p>
+                            </div>
+                            <div class="value-card" style="border-color: var(--role-cm);">
+                                <div class="value-icon">📑</div>
+                                <h3>가이드/순서 알려주기</h3>
+                                <p>전반적으로 잘 터짐</p>
+                            </div>
+                            <div class="value-card" style="border-color: var(--role-cm);">
+                                <div class="value-icon">🔄</div>
+                                <h3>키워드 반복</h3>
+                                <p>"독한 놈이다" 등 반복 사용 가능</p>
+                            </div>
+                            <div class="value-card" style="border-color: var(--role-cm);">
+                                <div class="value-icon">📅</div>
+                                <h3>시즌 소재</h3>
+                                <p>연말정산, 설날용돈 등 시의성</p>
+                            </div>
+                        </div>
+                        <div class="tip-box writer" style="margin-top: 15px;">
+                            <h4>💡 꿀팁</h4>
+                            <p><span class="highlight">"스레드 덕분에 잘됐다~"</span> 류 게시물은 항상 잘 터집니다. 시사/트렌드 키워드는 직접 언급 말고 <strong>내 생각을 말하듯이</strong> 쓰는 것만 터져요.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtab: 전환 & CTA -->
+                <div id="w-subtab7-2" class="subtab-content" style="display:none;">
+                    <div class="section-header">
+                        <span class="section-icon">🎯</span>
+                        <h2>전환 & CTA 실전 전략</h2>
+                    </div>
+
+                    <div class="card" style="border-left: 4px solid var(--success);">
+                        <h3 style="color: var(--success);">핵심 원칙: 유형마다 전환 멘트를 다르게</h3>
+                        <p>모든 게시물에 같은 CTA를 쓰면 효과가 떨어집니다. 게시물 성격에 맞는 전환 멘트를 설계하세요.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>📌 유형별 전환 전략</h3>
+                        <table>
+                            <tr>
+                                <th>게시물 유형</th>
+                                <th>전환 전략</th>
+                            </tr>
+                            <tr>
+                                <td><strong>참여형 게시물</strong></td>
+                                <td>댓글에 전화문의 전환 멘트 + 계정 설명 삽입</td>
+                            </tr>
+                            <tr>
+                                <td><strong>후기 게시물</strong></td>
+                                <td>실제 고객에게 댓글 달아달라고 사전 세팅 (조회수 8만 사례)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>인테리어 등 시각형</strong></td>
+                                <td>에프터 사진 + 짧은 후킹 본문 + 댓글에서 설명 이어가기 + 상담문의 유도</td>
+                            </tr>
+                        </table>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁 12/14, 1/19, 3/1</p>
+                    </div>
+
+                    <div class="card" style="border: 1px solid var(--warning);">
+                        <h3 style="color: var(--warning);">🏠 업종별 인사이트: 인테리어</h3>
+                        <ul>
+                            <li><strong>타깃은 아내</strong> → "남편에게 우리도 이렇게 하자" 유도 방향으로 작성</li>
+                            <li><strong>양도세 관련 콘텐츠</strong>도 인테리어 계정에서 잘 터짐 (주제 확장 가능)</li>
+                        </ul>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁 2/2, 홍가영 1/18</p>
+                    </div>
+
+                    <div class="tip-box writer">
+                        <h4>💡 전환의 핵심</h4>
+                        <p>댓글 공간을 <span class="highlight">세컨드 콘텐츠 영역</span>으로 활용하세요. 본문은 짧은 후킹, 댓글에서 설명 + CTA를 자연스럽게 녹이는 구조가 가장 효과적입니다.</p>
+                    </div>
+                </div>
+
+                <!-- Subtab: 성장 사례 -->
+                <div id="w-subtab7-3" class="subtab-content" style="display:none;">
+                    <div class="section-header">
+                        <span class="section-icon">📈</span>
+                        <h2>팔로워 성장 사례 & 벤치마킹</h2>
+                    </div>
+
+                    <div class="card">
+                        <h3>🏆 실전 성장 사례</h3>
+                        <table>
+                            <tr>
+                                <th>성과</th>
+                                <th>방법 / 인사이트</th>
+                                <th>출처</th>
+                            </tr>
+                            <tr>
+                                <td><strong>팔로워 500명 전환</strong></td>
+                                <td>@geulggumee 계정 운영</td>
+                                <td>한채혁 11/20</td>
+                            </tr>
+                            <tr>
+                                <td><strong>400명 전환</strong></td>
+                                <td>"독한놈이다" 템플릿 적용</td>
+                                <td>홍가영 11/21</td>
+                            </tr>
+                            <tr>
+                                <td><strong>6,500명 증가</strong></td>
+                                <td>특정 게시물 1개로 달성</td>
+                                <td>한채혁 11/25</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3일 만에 1,000명</strong></td>
+                                <td>@gna_couple — 컨셉이 핵심</td>
+                                <td>한채혁 12/27</td>
+                            </tr>
+                            <tr>
+                                <td><strong>800명 증가</strong></td>
+                                <td>ideabuild_official 벤치마킹</td>
+                                <td>한채혁 1/28</td>
+                            </tr>
+                            <tr>
+                                <td><strong>354명 전환</strong></td>
+                                <td>팔로우 전환 최적화</td>
+                                <td>동생 1/29</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4,000명 증가</strong></td>
+                                <td>의외의 포맷 실험</td>
+                                <td>김윤호 2/1</td>
+                            </tr>
+                            <tr>
+                                <td><strong>1,000명 전환</strong></td>
+                                <td>"사골국" 포맷 — 반복 사용 가능</td>
+                                <td>한채혁 3/2</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="tip-box writer">
+                        <h4>💡 성장 사례에서 배울 점</h4>
+                        <p><span class="highlight">한 번 잘 터진 포맷은 "사골국"처럼 반복 사용 가능</span>합니다. 성과가 좋았던 게시물의 구조를 분석하고, 소재만 바꿔서 재활용하세요.</p>
+                    </div>
+                </div>
+
+                <!-- Subtab: 카드뉴스 & 포맷 -->
+                <div id="w-subtab7-4" class="subtab-content" style="display:none;">
+                    <div class="section-header">
+                        <span class="section-icon">🎨</span>
+                        <h2>카드뉴스 & 새로운 포맷</h2>
+                    </div>
+
+                    <div class="card">
+                        <h3>📸 카드뉴스 트렌드</h3>
+                        <ul>
+                            <li><strong>카드뉴스 형태가 요즘 잘 먹힘</strong> — 제미나이(Gemini)로 바로 제작 시도 가능</li>
+                            <li><strong>"주린이가 나를 무조건 팔로우해야 되는 이유"</strong> + 잘 터진 게시물 사진 = 카드뉴스 개념</li>
+                            <li>나노바나나 툴 등 새로운 제작 도구 활용 검토</li>
+                        </ul>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px;">— 한채혁·김윤호 12/1, 한희환 12/5</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🔄 잘 터진 포맷 재활용법</h3>
+                        <p>"사골국 포맷" — 한 번 잘 터진 구조는 소재만 바꿔서 계속 사용할 수 있습니다.</p>
+                        <div class="process-steps" style="margin-top: 15px;">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>잘 터진 게시물 분석</h4>
+                                    <p>구조(후킹→본문→CTA), 길이, 톤, 이미지 유무 파악</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>구조만 추출</h4>
+                                    <p>핵심 뼈대(후킹 패턴, 문단 수, CTA 위치)를 템플릿으로 저장</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>소재만 교체</h4>
+                                    <p>다른 주제/클라이언트에 같은 구조 적용</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tip-box writer">
+                        <h4>💡 포맷 실험</h4>
+                        <p>텍스트만 고집하지 마세요. <span class="highlight">카드뉴스, 사진+짧은글, 리스트 이미지</span> 등 다양한 포맷을 시도하면 의외의 곳에서 팔로워 4,000명 증가 같은 결과가 나옵니다.</p>
+                    </div>
                 </div>
             </div>
 
