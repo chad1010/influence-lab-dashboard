@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영향력연구소 — 게시물 검수 체크리스트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --bg-light: #161b22;
+            --card: #1a1d27;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --role-ceo: #fd79a8;
+            --role-cm: #fdcb6e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #58a6ff, #00cec9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p { color: var(--text-secondary); margin-top: 8px; }
+
+        .meta-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .meta-bar input, .meta-bar select {
+            padding: 10px 14px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .meta-bar input:focus, .meta-bar select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .step-section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--bg);
+            flex-shrink: 0;
+        }
+
+        .step-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-light);
+        }
+
+        .check-item:hover { background: rgba(88, 166, 255, 0.08); }
+
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--success);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .check-item.checked {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .check-label { flex: 1; }
+        .check-label strong { color: var(--text); }
+        .check-label .standard { color: var(--text-secondary); font-size: 0.85rem; margin-left: 8px; }
+        .check-label .assignee {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .assignee.writer { background: rgba(253, 203, 110, 0.2); color: var(--role-cm); }
+        .assignee.cm { background: rgba(225, 112, 85, 0.2); color: #e17055; }
+        .assignee.ceo { background: rgba(253, 121, 168, 0.2); color: var(--role-ceo); }
+
+        .progress-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: var(--bg-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .result-section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+            border: 2px solid var(--border);
+            text-align: center;
+        }
+
+        .result-section.pass { border-color: var(--success); }
+        .result-section.fail { border-color: var(--danger); }
+
+        .result-icon { font-size: 3rem; margin-bottom: 10px; }
+
+        .btn-reset {
+            padding: 12px 24px;
+            background: var(--card);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-back {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--card);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            min-height: 40px;
+        }
+
+        .note-input:focus { outline: none; border-color: var(--accent); }
+
+        @media (max-width: 600px) {
+            .meta-bar { flex-direction: column; }
+            .check-label .standard { display: block; margin-left: 0; margin-top: 4px; }
+            .check-label .assignee { display: block; margin-left: 0; margin-top: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="onboarding.html" class="btn-back" style="margin-bottom: 15px;">← 온보딩으로 돌아가기</a>
+            <h1>📋 게시물 검수 체크리스트</h1>
+            <p>업로드 전 모든 게시물은 이 체크리스트를 통과해야 합니다</p>
+        </div>
+
+        <div class="meta-bar">
+            <input type="text" id="client-name" placeholder="클라이언트명">
+            <input type="text" id="writer-name" placeholder="작가명">
+            <input type="date" id="check-date">
+            <select id="post-type">
+                <option value="">게시물 유형 선택</option>
+                <option value="low">저관여</option>
+                <option value="high">고관여</option>
+                <option value="conversion">전환</option>
+                <option value="traffic">트래픽</option>
+            </select>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progress-count">0 / 18 항목</span>
+                <span id="progress-percent">0%</span>
+            </div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div class="step-section">
+            <div class="step-header">
+                <div class="step-number" style="background: var(--accent);">1</div>
+                <h2>기본 품질 체크</h2>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>한 줄 5단어 이하</strong>
+                    <span class="standard">모바일 기준 가독성</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>한 페이지 9줄 이하</strong>
+                    <span class="standard">스크롤 압박 방지</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>첫 줄 후킹 확인</strong>
+                    <span class="standard">스크롤 멈출 만한가?</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>맞춤법/오탈자 0건</strong>
+                    <span class="standard">한스펠체크 등 활용</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>표절률 25% 미만</strong>
+                    <span class="standard">표절 검사 도구 확인</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-section">
+            <div class="step-header">
+                <div class="step-number" style="background: var(--danger);">2</div>
+                <h2>휴먼 워싱 체크</h2>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>온점(.) 전부 제거</strong>
+                    <span class="standard">AI 흔적 #1</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>가운데점(·) / 화살표(→) 제거</strong>
+                    <span class="standard">자연어로 대체</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>이모티콘 0~2개</strong>
+                    <span class="standard">과도한 이모티콘 제거</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>"~합니다/입니다" → 구어체</strong>
+                    <span class="standard">딱딱한 어미 변환</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>소리 내어 읽기 통과</strong>
+                    <span class="standard">자연스러운가?</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-section">
+            <div class="step-header">
+                <div class="step-number" style="background: var(--warning);">3</div>
+                <h2>벤 리스트 대조</h2>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>구체적 금액/수익 언급 없음</strong>
+                    <span class="standard">돈 후킹 절대 금지</span>
+                    <span class="assignee writer">글작가</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>과장/보장 표현 없음</strong>
+                    <span class="standard">"무조건", "100%" 등</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>스팸성 CTA 없음</strong>
+                    <span class="standard">"맞팔", "좋아요하면 행운" 등</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>외부 링크 직접 유도 없음</strong>
+                    <span class="standard">"프로필 링크 클릭" 반복 등</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-section">
+            <div class="step-header">
+                <div class="step-number" style="background: var(--accent);">4</div>
+                <h2>브랜드 적합성</h2>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>톤앤매너 기획안 일치</strong>
+                    <span class="standard">브랜딩 기획안 대조</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>타겟 독자 공감 가능</strong>
+                    <span class="standard">타겟이 읽을 콘텐츠인가?</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>클라이언트 금지 표현 확인</strong>
+                    <span class="standard">기획안 avoid 항목</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+                <input type="checkbox">
+                <div class="check-label">
+                    <strong>게시물 유형 밸런스</strong>
+                    <span class="standard">저관여65 / 고관여25 / 전환10</span>
+                    <span class="assignee cm">CM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메모 -->
+        <div class="step-section">
+            <div class="step-header">
+                <div class="step-number" style="background: var(--text-secondary);">📝</div>
+                <h2>검수 메모</h2>
+            </div>
+            <textarea class="note-input" rows="4" placeholder="수정 요청 사항이나 피드백을 메모하세요..."></textarea>
+        </div>
+
+        <!-- 결과 -->
+        <div class="result-section" id="result-section" style="display: none;">
+            <div class="result-icon" id="result-icon"></div>
+            <h2 id="result-title"></h2>
+            <p id="result-desc" style="color: var(--text-secondary); margin-top: 8px;"></p>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-reset" onclick="resetAll()">🔄 전체 초기화</button>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding-bottom: 40px; color: var(--text-secondary); font-size: 0.8rem;">
+            영향력연구소 게시물 검수 체크리스트 v1.0
+        </div>
+    </div>
+
+    <script>
+        // Set today's date
+        document.getElementById('check-date').valueAsDate = new Date();
+
+        function toggleCheck(item) {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            item.classList.toggle('checked', checkbox.checked);
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const total = document.querySelectorAll('.check-item input[type="checkbox"]').length;
+            const checked = document.querySelectorAll('.check-item input[type="checkbox"]:checked').length;
+            const percent = Math.round((checked / total) * 100);
+
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-count').textContent = checked + ' / ' + total + ' 항목';
+            document.getElementById('progress-percent').textContent = percent + '%';
+
+            const resultSection = document.getElementById('result-section');
+            if (checked === total) {
+                resultSection.style.display = 'block';
+                resultSection.className = 'result-section pass';
+                document.getElementById('result-icon').textContent = '✅';
+                document.getElementById('result-title').textContent = '검수 통과!';
+                document.getElementById('result-title').style.color = 'var(--success)';
+                document.getElementById('result-desc').textContent = '모든 항목을 통과했습니다. 예약 업로드를 진행하세요.';
+            } else if (checked > 0) {
+                resultSection.style.display = 'block';
+                resultSection.className = 'result-section';
+                resultSection.style.borderColor = 'var(--warning)';
+                document.getElementById('result-icon').textContent = '⏳';
+                document.getElementById('result-title').textContent = '검수 진행 중...';
+                document.getElementById('result-title').style.color = 'var(--warning)';
+                document.getElementById('result-desc').textContent = (total - checked) + '개 항목 남았습니다.';
+            } else {
+                resultSection.style.display = 'none';
+            }
+        }
+
+        function resetAll() {
+            document.querySelectorAll('.check-item input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+                cb.closest('.check-item').classList.remove('checked');
+            });
+            document.querySelectorAll('.note-input').forEach(n => n.value = '');
+            document.getElementById('client-name').value = '';
+            document.getElementById('writer-name').value = '';
+            document.getElementById('check-date').valueAsDate = new Date();
+            document.getElementById('post-type').selectedIndex = 0;
+            updateProgress();
+        }
+    </script>
+</body>
+</html>
