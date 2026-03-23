@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영향력연구소 — 스레드 글쓰기 교육</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --bg-light: #161b22;
+            --card: #1a1d27;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --step1: #58a6ff;
+            --step2: #3fb950;
+            --step3: #f0883e;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--card) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 40px 0 20px 0;
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 {
+            font-size: 2.2rem; font-weight: 800;
+            background: linear-gradient(135deg, #58a6ff, #3fb950);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .header-sub { color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; }
+        .btn-back {
+            padding: 10px 20px; background-color: var(--card); color: var(--accent);
+            border: 1px solid var(--accent); border-radius: 8px; cursor: pointer;
+            font-size: 0.9rem; font-weight: 500; transition: var(--transition); text-decoration: none;
+        }
+        .btn-back:hover { background-color: var(--accent); color: var(--bg); }
+
+        /* Step Selector */
+        .step-selector { display: flex; gap: 12px; padding-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+        .step-btn {
+            padding: 14px 28px; border-radius: 12px; cursor: pointer; font-size: 1rem;
+            font-weight: 700; font-family: 'Noto Sans KR', sans-serif; transition: var(--transition);
+            border: 2px solid var(--border); background-color: var(--card); color: var(--text-secondary);
+        }
+        .step-btn.active-1 { border-color: var(--step1); color: var(--step1); background: rgba(88,166,255,0.1); box-shadow: 0 0 20px rgba(88,166,255,0.15); }
+        .step-btn.active-2 { border-color: var(--step2); color: var(--step2); background: rgba(63,185,80,0.1); box-shadow: 0 0 20px rgba(63,185,80,0.15); }
+        .step-btn.active-3 { border-color: var(--step3); color: var(--step3); background: rgba(240,136,62,0.1); box-shadow: 0 0 20px rgba(240,136,62,0.15); }
+        .step-btn.active-4 { border-color: var(--danger); color: var(--danger); background: rgba(248,81,73,0.1); box-shadow: 0 0 20px rgba(248,81,73,0.15); }
+        .step-btn:hover { border-color: var(--text-secondary); color: var(--text); }
+
+        /* Step Content */
+        .step-content { display: none; padding: 30px 0; }
+        .step-content.active { display: block; }
+
+        /* Tab navigation */
+        .tabs-container { display: flex; gap: 8px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+            font-weight: 600; font-family: 'Noto Sans KR', sans-serif; transition: var(--transition);
+            border: 1px solid var(--border); background-color: var(--card); color: var(--text-secondary); white-space: nowrap;
+        }
+        .tab-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(88,166,255,0.1); }
+        .tab-btn:hover { border-color: var(--text-secondary); color: var(--text); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Cards & Sections */
+        .card {
+            background-color: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 25px; margin-bottom: 20px;
+        }
+        .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+        .card h4 { font-size: 1rem; font-weight: 600; margin: 15px 0 8px 0; }
+        .card p { color: var(--text); margin-bottom: 8px; }
+        .card ul { list-style: none; padding-left: 0; }
+        .card ul li { padding: 6px 0 6px 20px; position: relative; color: var(--text); }
+        .card ul li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+        .section-header { display: flex; align-items: center; gap: 12px; margin: 30px 0 15px 0; }
+        .section-icon { font-size: 1.5rem; }
+        .section-header h2 { font-size: 1.4rem; font-weight: 700; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        th { background-color: var(--bg-light); color: var(--accent); font-weight: 600; }
+        td { color: var(--text); }
+        tr:hover td { background-color: rgba(88,166,255,0.03); }
+
+        /* KPI Grid */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin: 15px 0; }
+        .kpi-card {
+            background: var(--bg-light); border: 1px solid var(--border); border-radius: 10px;
+            padding: 20px; text-align: center;
+        }
+        .kpi-value { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
+        .kpi-label { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Tip Boxes */
+        .tip-box {
+            background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.3);
+            border-radius: 10px; padding: 18px; margin: 20px 0;
+        }
+        .tip-box h4 { color: var(--accent); margin-bottom: 8px; }
+        .tip-box.warn { background: rgba(248,81,73,0.08); border-color: rgba(248,81,73,0.3); }
+        .tip-box.warn h4 { color: var(--danger); }
+        .tip-box.success { background: rgba(63,185,80,0.08); border-color: rgba(63,185,80,0.3); }
+        .tip-box.success h4 { color: var(--success); }
+
+        /* Template Box */
+        .template-box {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 18px; margin: 12px 0; font-family: monospace; font-size: 0.88rem;
+            line-height: 1.8; white-space: pre-wrap; color: var(--text-secondary);
+        }
+
+        /* Highlight */
+        .highlight { color: var(--accent); font-weight: 700; }
+        .hl-green { color: var(--success); font-weight: 700; }
+        .hl-orange { color: var(--step3); font-weight: 700; }
+        .hl-red { color: var(--danger); font-weight: 700; }
+
+        /* Badge */
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 0.7rem; font-weight: 700; vertical-align: middle;
+        }
+
+        /* Compare boxes */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .compare-box { background: var(--bg-light); border-radius: 8px; padding: 15px; border: 1px solid var(--border); }
+        .compare-box.bad { border-color: rgba(248,81,73,0.4); }
+        .compare-box.good { border-color: rgba(63,185,80,0.4); }
+
+        /* Checklist */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 10px 0 10px 32px; position: relative; border-bottom: 1px solid rgba(48,54,61,0.5); }
+        .checklist li::before { content: "☐"; position: absolute; left: 0; font-size: 1.1rem; color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.6rem; }
+            .step-selector { gap: 8px; }
+            .step-btn { padding: 10px 16px; font-size: 0.85rem; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Progress bar at top */
+        .progress-bar { display: flex; gap: 4px; margin-bottom: 15px; }
+        .progress-segment {
+            flex: 1; height: 4px; border-radius: 2px; background: var(--border);
+        }
+        .progress-segment.done { background: var(--success); }
+        .progress-segment.current { background: var(--accent); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="container">
+        <div class="header-content">
+            <h1>스레드 글쓰기 완성 교육</h1>
+            <a href="onboarding.html" class="btn-back">← 온보딩으로</a>
+        </div>
+        <p class="header-sub">신입 글작가를 위한 스레드 글쓰기 체계 교육 — 기반 잡기 → 성장 → 수익화까지</p>
+
+        <div class="step-selector">
+            <button class="step-btn active-1" onclick="switchStep('s1', this, 1)">🔵 STEP 1. 기반 잡기</button>
+            <button class="step-btn" onclick="switchStep('s2', this, 2)">🟢 STEP 2. 성장</button>
+            <button class="step-btn" onclick="switchStep('s3', this, 3)">🟠 STEP 3. 수익화</button>
+            <button class="step-btn" onclick="switchStep('s4', this, 4)">🔴 필독: 벤 & 로드맵</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- STEP 1: 기반 잡기 -->
+<!-- ============================================================ -->
+<div id="s1" class="step-content active">
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('s1','s1-t1',this)">왜 스레드인가</button>
+        <button class="tab-btn" onclick="switchTab('s1','s1-t2',this)">브랜딩 & 컨셉</button>
+        <button class="tab-btn" onclick="switchTab('s1','s1-t3',this)">프로필 최적화</button>
+        <button class="tab-btn" onclick="switchTab('s1','s1-t4',this)">벤치마킹</button>
+    </div>
+
+    <!-- 왜 스레드인가 -->
+    <div id="s1-t1" class="tab-content active">
+        <div class="section-header">
+            <span class="section-icon">🧵</span>
+            <h2>왜 지금 스레드인가</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step1);">
+            <h3 style="color: var(--step1);">스레드란?</h3>
+            <ul>
+                <li>메타(구 페이스북)가 만든 <strong>텍스트 기반 SNS</strong> 플랫폼</li>
+                <li>인스타그램과 연계 → 팔로워 교차 유입 가능</li>
+                <li><strong>글만으로</strong> 콘텐츠 생산 → 영상/이미지 제작 부담 제로</li>
+                <li>아직 기업 계정 진입 초기 단계 → <span class="highlight">블루오션</span></li>
+                <li>메타 광고가 아직 없음 = 유기적 도달 극대화 시기</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>📈 성장 데이터</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">490만</div>
+                    <div class="kpi-label">MAU (2024년 기준)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" style="color: var(--success);">2.68x</div>
+                    <div class="kpi-label">1년간 성장률</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" style="color: var(--step3);">1위</div>
+                    <div class="kpi-label">소셜미디어 성장 순위</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🎯 스레드 문화 — 이걸 모르면 망한다</h3>
+            <table>
+                <tr><th style="width:25%;">문화</th><th>설명</th></tr>
+                <tr><td><strong>짧고 강력한 메시지</strong></td><td>임팩트 있는 문장, 밈/유행어 활용</td></tr>
+                <tr><td><strong>댓글도 콘텐츠</strong></td><td>댓글이 피드백이 아니라 콘텐츠의 연장선 — "댓글 맛집"</td></tr>
+                <tr><td><strong>반말 문화</strong></td><td>인스타보다 가볍고 트위터보다 덜 공격적, 친근한 톤</td></tr>
+                <tr><td><strong>진솔함 우선</strong></td><td>꾸미지 않은 인생사 공유, 악플 비율 낮음</td></tr>
+                <tr><td><strong>저점매수 알고리즘</strong></td><td>인스타처럼 초반 노출 후 사라지지 않음 — 시간이 지나도 다시 터질 수 있음</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 브랜딩 & 컨셉 -->
+    <div id="s1-t2" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🎨</span>
+            <h2>퍼스널 브랜딩 & 계정 컨셉</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step1);">
+            <h3 style="color: var(--step1);">계정 기획 4가지 핵심 요소</h3>
+            <p style="margin-bottom: 12px;">기획 없이 무작정 글 쓰면 → 팔로워 안 늘거나 도움 안 되는 팔로워만 모임</p>
+            <table>
+                <tr><th>요소</th><th>설명</th><th>예시</th></tr>
+                <tr><td><strong>① 타겟 명확화</strong></td><td>누가 팔로우하면 좋을지</td><td>2030 직장인, 4050 주부</td></tr>
+                <tr><td><strong>② 주제 선정</strong></td><td>어떤 주제에 대해 이야기할지</td><td>재테크, 마케팅, 창업</td></tr>
+                <tr><td><strong>③ 목표 설정</strong></td><td>궁극적으로 무엇을 할지</td><td>강의 판매, 커뮤니티, 브랜딩</td></tr>
+                <tr><td><strong>④ 톤앤매너</strong></td><td>일관된 스타일</td><td>편한 동네형 / 전문가 신뢰감</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>💰 돈 되는 3대 주제</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">💪</div>
+                    <div class="kpi-label">건강: 운동, 뷰티, 라이프</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">💰</div>
+                    <div class="kpi-label">돈: N잡, 부업, 재테크</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">❤️</div>
+                    <div class="kpi-label">관계: 연애, 모임, 네트워킹</div>
+                </div>
+            </div>
+            <p>내 주제가 이 3가지 중 하나에 반드시 포함되어야 함. 타겟 구매력 고려: 30대 직장인, 4050 주부, 전문직, 사업가</p>
+        </div>
+
+        <div class="card">
+            <h3>📊 계정 컨셉 3가지</h3>
+            <table>
+                <tr><th>컨셉</th><th>특징</th><th>수익화</th></tr>
+                <tr><td><strong>엔터테이너형</strong></td><td>유머, 패션, 뷰티 등 재미</td><td>제휴 마케팅, 자체 브랜드</td></tr>
+                <tr><td><strong>소통형</strong></td><td>스토리 + 댓글 소통 활발</td><td>커뮤니티, 오프라인 행사</td></tr>
+                <tr><td><strong>전문가형 ⭐</strong></td><td>특정 분야 전문가 포지션</td><td>교육, 컨설팅, 멤버십 등 모든 수익화</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>🎯 타겟 좁히기 (중요!)</h3>
+            <p>"모든 사람에게 잘 보이려 하면 아무도 기억 못 함"</p>
+            <div style="background: var(--bg); padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <p style="color: var(--text-secondary);">a. 재테크 전문가 <span class="hl-red">(너무 넓음)</span></p>
+                <p style="color: var(--text-secondary);">b. 20대를 위한 재테크 전문가</p>
+                <p style="color: var(--text-secondary);">c. 20대 여성을 위한 재테크 전문가</p>
+                <p><strong style="color: var(--success);">d. 20대 여성을 위한 내집마련 부동산 재테크 전문가 ✅</strong></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🏢 기업/자영업자 계정 가이드 (대행 필수)</h3>
+            <ul>
+                <li>무조건 기업계정보다 <strong>"사람"을 브랜딩</strong>하는 게 좋음</li>
+                <li>최우선: 대표자 본인 브랜딩 (가장 효과적)</li>
+                <li>대표자가 어려우면: 마케터 컨셉 or "부모님 가게 도와드리는" 컨셉</li>
+                <li>커머스 계정: 사진/영상 적극 활용 (비주얼 강점 업종)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>✨ 차별화 전략 3가지</h3>
+            <ul>
+                <li><strong>나를 팔로우하면 얻을 수 있는 가치</strong> → 유익한 정보 명확히</li>
+                <li><strong>내 계정에서만 줄 수 있는 가치</strong> → 독점적 가치 (쉬운 설명, 오프라인 행사 등)</li>
+                <li><strong>나만 가지고 있는 스토리</strong> → 독특한 경험과 이야기 발굴</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 프로필 최적화 -->
+    <div id="s1-t3" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">👤</span>
+            <h2>프로필 최적화 세팅</h2>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">"프로필은 내 계정의 '첫인상'이자 '명함'이다"</p>
+
+        <div class="card" style="border-left: 6px solid var(--step1);">
+            <h3 style="color: var(--step1);">닉네임 세팅</h3>
+            <ul>
+                <li>부르기 쉬운 닉네임 (이름 대신 불리니까)</li>
+                <li>스레드 + 네이버에서 검색 → 겹치는지 확인</li>
+                <li>닉네임 앞/뒤에 <strong>계정 정체성 한 줄</strong> 추가</li>
+            </ul>
+            <div style="background: var(--bg); padding: 12px; border-radius: 6px; margin-top: 10px;">
+                <p>예: <strong style="color: var(--accent);">"채미 | 금융초년생 경제 가이더"</strong></p>
+                <p style="color: var(--text-secondary); font-size: 0.85rem;">→ 검색 시 닉네임 노출 + 계정 정체성 즉시 전달</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📝 프로필 소개글 — 4줄 공식</h3>
+            <table>
+                <tr><th style="width: 10%;">#</th><th style="width: 30%;">역할</th><th>설명</th></tr>
+                <tr><td>1줄</td><td><strong>나는 누구인가</strong></td><td>어떤 사람이고 여긴 어떤 계정인지</td></tr>
+                <tr><td>2줄</td><td><strong>내가 이룬 성과</strong></td><td>수치 기반 추천 (구체적 숫자)</td></tr>
+                <tr><td>3줄</td><td><strong>팔로우할 이유</strong></td><td>어떤 콘텐츠를 나눌 건지, 최종 목표</td></tr>
+                <tr><td>4줄</td><td><strong>링크 유도</strong></td><td>무료 이벤트와 연계하면 효과 UP</td></tr>
+            </table>
+            <p style="margin-top: 10px; color: var(--text-secondary);">핵심: "이 사람을 왜 팔로우해야 하지?"에 답하는 소개글</p>
+        </div>
+
+        <div class="card">
+            <h3>📸 프로필 사진 & 배경</h3>
+            <ul>
+                <li>개인 계정 → 본인 얼굴 사진 (최우선)</li>
+                <li>얼굴 어려우면 → AI 활용 이미지라도 OK</li>
+                <li>배경 컬러: 블루(신뢰감) / 레드(강렬한 인상) / 메시지와 일치하는 색상</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🔗 프로필 링크</h3>
+            <ul>
+                <li>리틀리 같은 링크 정리 서비스 활용</li>
+                <li>무료 자료 다운로드로 클릭 유도 (예: "재테크 초보자를 위한 무료 가이드")</li>
+                <li>클릭 → 페이지 둘러봄 → 자연스러운 홍보/판매 연결</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>⚙️ 주요 기능 활용법</h3>
+            <table>
+                <tr><th>기능</th><th>활용법</th></tr>
+                <tr><td>프로필 고정</td><td>자기소개 or 메인 판매 상품 게시물 고정</td></tr>
+                <tr><td>좋아요/공유 수 숨기기</td><td>숫자 적을 때 심리적 장벽 낮추기</td></tr>
+                <tr><td>PC 버전</td><td>타자 빠르고 작업 효율적</td></tr>
+                <tr><td>주제 (구 해시태그)</td><td>후킹 문구로도 활용 가능</td></tr>
+                <tr><td>설문 기능</td><td>댓글보다 참여 쉬움 → 반응도 UP</td></tr>
+                <tr><td>임시 저장 & 예약</td><td>아이디어 즉시 저장, 원하는 시간 예약</td></tr>
+                <tr><td>피드 만들기</td><td>벤치마킹 계정 모아 비공개 피드 → 분석 효율화</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 벤치마킹 -->
+    <div id="s1-t4" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🔍</span>
+            <h2>벤치마킹 & 글감 찾기</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step1);">
+            <h3 style="color: var(--step1);">벤치마킹 실전</h3>
+            <p><strong>내 분야 2개 + 타 분야 2개 = 총 4개 선정</strong></p>
+            <ul>
+                <li>내 분야: 직접 경쟁자 & 롤모델 계정</li>
+                <li>타 분야: 표절 방지 + 새로운 아이디어 소스</li>
+            </ul>
+            <h4>분석 5가지 포인트</h4>
+            <ul>
+                <li>닉네임 & 계정 컨셉은 어떻게 잡았나?</li>
+                <li>프로필 소개글은 어떻게 썼나?</li>
+                <li>글쓰기 스타일은? (짧게/넘버링/길게 — 터진 글 위주 분석)</li>
+                <li>어떤 주제의 게시물이 잘 터지나?</li>
+                <li>CTA는 어떻게 넣나?</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>💡 글감이 떠오르지 않을 때</h3>
+            <ul>
+                <li>GPT에게 내 분야 아이디어 질문하기</li>
+                <li>일상에서 글감 될 만한 것 전부 기록</li>
+                <li>스레드 임시저장 기능 활용 → 제목 한 줄이라도 저장</li>
+                <li>스레드 돋보기에서 내 분야 키워드로 검색 → 터진 글 분석</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🔥 초성장 키워드</h3>
+            <p>분야별 "치트키 키워드"가 존재한다:</p>
+            <div class="kpi-grid">
+                <div class="kpi-card"><div class="kpi-value" style="font-size: 1rem;">신혼부부</div><div class="kpi-label">부동산/인테리어/재테크</div></div>
+                <div class="kpi-card"><div class="kpi-value" style="font-size: 1rem;">돈/부업</div><div class="kpi-label">넓은 주제 → 좁혀가기</div></div>
+                <div class="kpi-card"><div class="kpi-value" style="font-size: 1rem;">부동산/대출</div><div class="kpi-label">잘 모르지만 관심 높음</div></div>
+                <div class="kpi-card"><div class="kpi-value" style="font-size: 1rem;">부정적 키워드</div><div class="kpi-label">"최악"이 "최고"보다 터짐</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STEP 2: 성장 -->
+<!-- ============================================================ -->
+<div id="s2" class="step-content">
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('s2','s2-t1',this)">알고리즘</button>
+        <button class="tab-btn" onclick="switchTab('s2','s2-t2',this)">후킹 & 제목</button>
+        <button class="tab-btn" onclick="switchTab('s2','s2-t3',this)">글쓰기 구조</button>
+        <button class="tab-btn" onclick="switchTab('s2','s2-t4',this)">게시물 유형 5가지</button>
+        <button class="tab-btn" onclick="switchTab('s2','s2-t5',this)">팔로워 & 운영</button>
+        <button class="tab-btn" onclick="switchTab('s2','s2-t6',this)">실전 템플릿</button>
+    </div>
+
+    <!-- 알고리즘 -->
+    <div id="s2-t1" class="tab-content active">
+        <div class="section-header">
+            <span class="section-icon">⚙️</span>
+            <h2>스레드 알고리즘 완전 분석</h2>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">"알고리즘을 이해하면 적은 노력으로 큰 결과를 낼 수 있다"</p>
+
+        <div class="card" style="border-left: 6px solid var(--step2);">
+            <h3 style="color: var(--step2);">4가지 반응 지표</h3>
+            <table>
+                <tr><th>지표</th><th>알고리즘 영향도</th><th>높이는 법</th></tr>
+                <tr><td><strong>좋아요</strong></td><td>기본값</td><td>CTA: "도움 되었다면 좋아요"</td></tr>
+                <tr><td><strong>댓글</strong></td><td><span class="hl-red">최상위</span> — 긴 댓글/토론 댓글일수록 가치 높음</td><td>토론 유도하는 글쓰기</td></tr>
+                <tr><td><strong>리포스트/인용</strong></td><td>상대방 팔로워에게 내 글 노출</td><td>저장/공유하고 싶은 정보성 콘텐츠</td></tr>
+                <tr><td><strong>보내기(공유)</strong></td><td>알고리즘 특히 민감 반응</td><td>"친구한테 보내줘", "혼자 보기 아까우면 공유!"</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>🔄 알고리즘 작동 원리</h3>
+            <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
+                <p><strong>게시물 올림</strong> → 소수에게 먼저 노출 → <strong>반응 좋으면</strong> → 더 넓은 범위로 확산</p>
+                <p style="margin-top: 8px; color: var(--accent);">초반 댓글이 핵심! 댓글이 빠르게 달리면 → "뜨는 게시물"로 판단 → 알고리즘 탑승</p>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <h4>💡 핵심 인사이트</h4>
+            <p>좋아요만 많다고 되는 게 아님 → <span class="highlight">댓글+공유</span>가 진짜 핵심. 글 하나 터지면 다른 글도 같이 노출된다 (연쇄 효과)</p>
+        </div>
+
+        <div class="tip-box warn">
+            <h4>🚨 댓글 외부 링크 = 조회수 급감 (실전 데이터)</h4>
+            <p>조회수 8,000 이상 나오던 계정이 댓글에 링크 달기 시작하고 → 조회수 200으로 급감. <strong>댓글에 절대 외부 링크 넣지 말 것! → 프로필 링크로 유도</strong></p>
+        </div>
+    </div>
+
+    <!-- 후킹 & 제목 -->
+    <div id="s2-t2" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🎣</span>
+            <h2>후킹되는 제목 만들기</h2>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">"제목이 90%다. 읽히지 않으면 존재하지 않는 것과 같다"</p>
+
+        <div class="card" style="border-left: 6px solid var(--step2);">
+            <h3 style="color: var(--step2);">기본 6가지 후킹 패턴</h3>
+            <table>
+                <tr><th>패턴</th><th>원리</th><th>예시</th></tr>
+                <tr><td><strong>궁금증 유발</strong></td><td>질문/의문 유도</td><td>"다들 잘 모르는 ○○의 진실 8가지"</td></tr>
+                <tr><td><strong>손실 회피</strong></td><td>손해 심리 자극</td><td>"이 글 안 보면 손해", "20만원 아끼는~"</td></tr>
+                <tr><td><strong>권위 활용</strong></td><td>전문가/경력 활용</td><td>"100억 자산가가 알려주는~"</td></tr>
+                <tr><td><strong>숫자 강조</strong></td><td>홀수가 효과적</td><td>"5가지 방법", "7가지 실수"</td></tr>
+                <tr><td><strong>시선 강탈</strong></td><td>부정적 언어로 멈추게</td><td>"부셔 버렸습니다", "경고"</td></tr>
+                <tr><td><strong>핵심 내용 제시</strong></td><td>첫 줄에 읽을 이유</td><td>"이 글 끝까지 읽으면 연금 한 줄 요약"</td></tr>
+            </table>
+            <p style="margin-top: 10px;">두 가지 이상 패턴을 <strong>조합하면 더 강력!</strong> 예: "궁금증 + 숫자" → "90%가 모르는 초성장 3가지 비밀"</p>
+        </div>
+
+        <div class="card">
+            <h3>🔥 터지는 제목 12가지 카테고리</h3>
+            <table>
+                <tr><th>#</th><th>카테고리</th><th>대표 예시</th></tr>
+                <tr><td>1</td><td>스토리텔링</td><td>"00년생이 스레드 시작하고 0개월만에 생긴 일"</td></tr>
+                <tr><td>2</td><td>후회/회고</td><td>"이것 깨닫는데 7년을 낭비했네요"</td></tr>
+                <tr><td>3</td><td>루틴/실험</td><td>"1년 4개월간 매일 운동해봤더니..."</td></tr>
+                <tr><td>4</td><td>선언형</td><td>"4억 모으고 백수로 사는 이유"</td></tr>
+                <tr><td>5</td><td>한 줄 반전</td><td>"나만 아는 비밀을 발견한 느낌"</td></tr>
+                <tr><td>6</td><td>심리 인사이트</td><td>"부자 되면 싸가지 없어지는 이유"</td></tr>
+                <tr><td>7</td><td>How-to</td><td>"집 보러 가서 반드시 확인할 3가지"</td></tr>
+                <tr><td>8</td><td>추천/리스트</td><td>"17년차 연구원이 뽑은 아침 식사 7가지"</td></tr>
+                <tr><td>9</td><td>돈관리</td><td>"제발 월급 함부로 쓰지 마세요"</td></tr>
+                <tr><td>10</td><td>툴/AI</td><td>"늦게 알면 폭풍 오열할 챗GPT 꿀기능"</td></tr>
+                <tr><td>11</td><td>경고/팩폭</td><td>"워렌 버핏이 경고합니다…"</td></tr>
+                <tr><td>12</td><td>사례/인증</td><td>"100억 자산가가 아들에게 한 마디만 할 수 있다면"</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>🏆 가장 많이 반복되는 제목 키워드 TOP 5</h3>
+            <ul>
+                <li><strong>"~하는 이유"</strong> → 호기심 클릭 유도</li>
+                <li><strong>"~하지 마세요 / 절대~"</strong> → 금지 → 역설적 관심</li>
+                <li><strong>숫자 (N가지, N만원, N년)</strong> → 구체성 → 신뢰</li>
+                <li><strong>"~하는 사람 특징/공통점"</strong> → 자기 투영 → 클릭</li>
+                <li><strong>"~해봤더니 / ~하고 나서"</strong> → 경험 기반 → 신뢰</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🎯 제목 작성 실전 테크닉 5가지</h3>
+            <ul>
+                <li><strong>수치 활용:</strong> 추상 표현 금지 → 기간 + 금액 + 개수 조합 ("2년 만에 10억 만든 5가지 루틴")</li>
+                <li><strong>자극형:</strong> "~라면 클릭하지 마세요" → 자아를 건드려 클릭 유도</li>
+                <li><strong>금지·위협형:</strong> "절대 하지 마세요" → 위험 회피 심리</li>
+                <li><strong>권위 부여:</strong> 숫자·경력·성과로 0.5초 신뢰 확보 ("부동산 12년차가 말하는~")</li>
+                <li><strong>신조어 만들기:</strong> 직접 만든 단어 → 기억성·확산성 UP ("통장 3분할법")</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 글쓰기 구조 -->
+    <div id="s2-t3" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🏗️</span>
+            <h2>터지는 글의 구조</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step2);">
+            <h3 style="color: var(--step2);">본문 작성법 7단계</h3>
+            <p style="margin-bottom: 12px;">"후킹으로 멈추게 하고, 공감으로 붙잡고, 권위로 신뢰를 주고, 사례로 설득한다"</p>
+            <table>
+                <tr><th>단계</th><th>핵심</th><th>설명</th></tr>
+                <tr><td>① 후킹</td><td>시선 고정</td><td>반전/숫자/충격 → 스크롤 멈추게 하는 것이 유일한 목적</td></tr>
+                <tr><td>② 독자 심리</td><td>고민·불안 찌르기</td><td>"이런 고민 있지 않아?" 구체적 문장으로</td></tr>
+                <tr><td>③ 권위 부여</td><td>짧고 강하게 신뢰</td><td>숫자로 보여줘야 신뢰, 누적 성과가 강력</td></tr>
+                <tr><td>④ 주장</td><td>핵심 메시지 한 줄</td><td>"나는 이렇게 생각한다" 명확히</td></tr>
+                <tr><td>⑤ 근거</td><td>숫자 기반</td><td>비교/대비/전후 변화로 설득력 극대화</td></tr>
+                <tr><td>⑥ 사례</td><td>가장 중요한 파트</td><td>개인 경험 + 수치 + 전후 비교</td></tr>
+                <tr><td>⑦ 마무리</td><td>강요 금지, 가능성 제시</td><td>"~해보는 건 어떨까요?" 행동 제안 1개</td></tr>
+            </table>
+            <p style="margin-top: 10px; color: var(--text-secondary);">매번 7단계 다 쓸 필요 없음 → 상황에 따라 3~5단계로 축약 가능</p>
+        </div>
+
+        <div class="card">
+            <h3>📐 조회수 터지는 포맷 5가지</h3>
+            <table>
+                <tr><th>포맷</th><th>설명</th></tr>
+                <tr><td><strong>제목 한 줄 + 사진</strong></td><td>짧고 강렬한 한 줄 + 뉴스 캡처/밈/사진 조합</td></tr>
+                <tr><td><strong>넘버링 게시물</strong></td><td>1, 2, 3... 리스트형 — 저장/리포스트율 높음</td></tr>
+                <tr><td><strong>스토리텔링/자랑형</strong></td><td>성과 + 과정 = 공감과 동기부여 동시</td></tr>
+                <tr><td><strong>무료 나눔</strong></td><td>"자료" 댓글 → 링크 공유 → 폭발적 참여</td></tr>
+                <tr><td><strong>반전 게시물</strong></td><td>기대를 깨는 반전 → 댓글 폭발, 공유율 높음</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>300+ 터진 글 공통점 5가지</h3>
+            <ul>
+                <li><strong>첫 줄에서 감정을 건드린다</strong> — 불안(30%) > 희망(25%) > 분노(15%) > 공감(15%) > 호기심(15%)</li>
+                <li><strong>구체적 숫자가 들어간다</strong> — 기간 + 금액 + 개수 조합이 최강</li>
+                <li><strong>타겟이 "이건 내 이야기"라고 느낀다</strong> — 직접 호명("사회초년생", "2030")</li>
+                <li><strong>글 구조가 단순하고 가독성이 좋다</strong> — 넘버링 35% / 짧은 글+사진 25%</li>
+                <li><strong>반드시 CTA로 끝난다</strong> — 최강: "이미 N만명이 팔로우 중이야. 안하면 너만 손해"</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>✍️ 스레드 전용 글쓰기 핵심 (대행 실전)</h3>
+            <ul>
+                <li><strong>명령형/지시형 어조</strong>가 효과적 — 존대가 아닌 반말+명령조가 잘 먹힘</li>
+                <li>본문에 충분한 <strong>"떡밥"</strong>을 제공하라 — 짧으면 효과 없음</li>
+                <li><strong>"내 생각을 말하는 글"</strong>이 반응 최강 — 정보만 주면 한계, "내 생각"이 진짜 터짐</li>
+                <li><strong>일상 글</strong>도 중요 — 안 쓰면 팬 못 만듦. 추천: 정보 40% + 공감/의견 30% + 일상 30%</li>
+                <li><strong>메인 후킹 → 댓글에 이어쓰기</strong> — 현재 가장 잘 먹히는 패턴</li>
+                <li>맞춤법·표절 관리 — 기업 계정 신뢰도에 직접 영향</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>✅ 글쓰기 전 필수 체크리스트</h3>
+            <ul class="checklist">
+                <li>첫 줄이 감정을 건드리는가?</li>
+                <li>구체적 숫자가 들어 있는가?</li>
+                <li>타겟이 "이건 내 이야기"라고 느끼는가?</li>
+                <li>모바일에서 3초 안에 구조가 파악되는가?</li>
+                <li>마지막에 CTA가 있는가?</li>
+            </ul>
+            <p style="margin-top: 10px; color: var(--success);">→ 5개 중 4개 이상 충족하면 터질 확률 대폭 상승!</p>
+        </div>
+    </div>
+
+    <!-- 게시물 유형 5가지 -->
+    <div id="s2-t4" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">📝</span>
+            <h2>게시물 유형 5가지</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid #a371f7;">
+            <h3 style="color: #a371f7;">유형 1: 스토리텔링형 (공감 폭발)</h3>
+            <ul>
+                <li>개인 경험/에피소드로 감정 자극 — "나도 저랬었지" 공감</li>
+                <li>터지는 주제: 부부, 가족, 직장, 부모님 등 모두가 공감하는 소재</li>
+                <li>치트키: 자기소개 게시물 → 프로필 상단 고정</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step2);">
+            <h3 style="color: var(--step2);">유형 2: 지시형 (정보 제공) — 팔로워 증가 최강 ⭐</h3>
+            <ul>
+                <li>"어떻게 하면 된다" 방식으로 정보 제공</li>
+                <li>가장 작성 어렵지만, <strong>팔로워가 가장 많이 느는 유형</strong></li>
+                <li>방식 A: 본문 안에 모든 정보 → 긴 글</li>
+                <li>방식 B: 본문은 후킹 + 댓글에 정보 → 댓글 유도 효과까지</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step3);">
+            <h3 style="color: var(--step3);">유형 3: 핫토픽형 (토론 유도) — 조회수 폭발</h3>
+            <ul>
+                <li>트렌드/논란 주제로 의견 끌어내기</li>
+                <li>장점: 댓글 참여 → 자연스러운 노출 증가</li>
+                <li>주의: 너무 공격적으로 쓰지 않기</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--warning);">
+            <h3 style="color: var(--warning);">유형 4: 인증형 (성과 공유) — 브랜딩 강화</h3>
+            <ul>
+                <li>내 성과를 공유하며 동기부여</li>
+                <li>핵심: 자랑 X → "노력의 과정"을 보여주기</li>
+                <li>치트키: "스레드 덕분에~" → 응원해주는 문화 활용</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--danger);">
+            <h3 style="color: var(--danger);">유형 5: 공감/의견형 — 찐팬 형성 최강</h3>
+            <ul>
+                <li>정보만 올리면 "유익하긴 한데 딱 거기까지" → 팬이 안 됨</li>
+                <li>내 생각, 가치관, 의견을 담은 글이 섞여야 진짜 "나"를 따르는 팬이 생김</li>
+                <li>활용: 정보성 글 3~4개 후 공감형 1개</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🎯 유형별 활용 가이드</h3>
+            <table>
+                <tr><th>목적</th><th>추천 유형</th></tr>
+                <tr><td>팔로워 늘리기</td><td><strong>지시형</strong> (정보 제공)</td></tr>
+                <tr><td>조회수 터뜨리기</td><td><strong>핫토픽형</strong> (토론 유도)</td></tr>
+                <tr><td>공감+팬심 쌓기</td><td><strong>스토리텔링형</strong></td></tr>
+                <tr><td>찐팬 형성+정체성</td><td><strong>공감/의견형</strong></td></tr>
+                <tr><td>전문가 브랜딩</td><td><strong>인증형</strong> (성과 공유)</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 팔로워 & 운영 -->
+    <div id="s2-t5" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">📈</span>
+            <h2>팔로워 모으기 & 계정 운영</h2>
+        </div>
+
+        <div class="card" style="border: 2px solid var(--step2); background: rgba(63,185,80,0.05);">
+            <h3 style="color: var(--step2);">팔로워 모으는 글 유형 5가지</h3>
+            <table>
+                <tr><th>#</th><th>유형</th><th>핵심</th></tr>
+                <tr><td>1</td><td>"나를 팔로우 해야 하는 이유"</td><td>어떤 콘텐츠를 줄 건지 선언 + 터진 글 캡처 첨부</td></tr>
+                <tr><td>2</td><td>자료 나눔</td><td>팔로우 + 댓글 → 무료 자료 제공. 팔로워+리드 동시 확보</td></tr>
+                <tr><td>3</td><td>"고민 해결해줄게"</td><td>타겟 고민 직접 호명 → "이 사람이 해결해주겠구나"</td></tr>
+                <tr><td>4</td><td>"나랑 스친할래?"</td><td>자기소개 + 스친 제안. 초기 계정일수록 효과적</td></tr>
+                <tr><td>5</td><td>유익한 정보성</td><td>글 자체의 가치가 팔로우 이유. 장기적으로 가장 건강</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>🔥 팔로워 유입 전략 4가지</h3>
+            <ul>
+                <li><strong>터진 글 모아보기:</strong> 반응 좋았던 글 캡처 모아서 → "내 스레드만 봐" 식으로 유도</li>
+                <li><strong>자료 나눔:</strong> "좋아요 + 팔로우" 조건부 나눔 → 알고리즘 부스트 + 팔로워 확보</li>
+                <li><strong>팔로워 급성장 강조:</strong> "저점매수" 심리 자극 → "지금이라도 빨리 팔로우"</li>
+                <li><strong>터진 정보성 글:</strong> 가장 건강한 팔로워 유입 방식</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>⏰ 최적 발행 시간대</h3>
+            <table>
+                <tr><th>타겟</th><th>골든타임 ①</th><th>골든타임 ②</th><th>피해야 할 시간</th></tr>
+                <tr><td>직장인 (2030)</td><td>오전 7:30~8:30</td><td>오후 6:00~9:00</td><td>오전 10~12시</td></tr>
+                <tr><td>주부/자영업자</td><td>오전 10:00~11:30</td><td>오후 2:00~3:30</td><td>저녁 6~8시</td></tr>
+                <tr><td>대학생/취준생</td><td>오후 12:00~1:00</td><td>오후 10:00~자정</td><td>오전 9~11시</td></tr>
+            </table>
+            <p style="margin-top: 8px; color: var(--text-secondary);">핵심: 내 타겟이 "스마트폰을 손에 들고 있는 시간"에 발행</p>
+        </div>
+
+        <div class="card">
+            <h3>📅 주간 콘텐츠 캘린더</h3>
+            <table>
+                <tr><th>요일</th><th>유형</th><th>목적</th></tr>
+                <tr><td>월</td><td>정보성 (지시형)</td><td>팔로워 증가</td></tr>
+                <tr><td>화</td><td>스토리텔링형</td><td>공감 + 팬심</td></tr>
+                <tr><td>수</td><td>핫토픽형</td><td>조회수 + 댓글</td></tr>
+                <tr><td>목</td><td>공감/의견형</td><td>찐팬 형성</td></tr>
+                <tr><td>금</td><td>정보성 (넘버링)</td><td>저장 + 리포스트</td></tr>
+                <tr><td>토</td><td>인증형 or 나눔</td><td>브랜딩 + 리드</td></tr>
+                <tr><td>일</td><td>일상/가벼운 글</td><td>친근감</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>💬 댓글 운영 전략</h3>
+            <h4>댓글 작성 우선순위</h4>
+            <ul>
+                <li><strong>1순위:</strong> 내 게시물에 달린 댓글에 답글 (최우선!)</li>
+                <li><strong>2순위:</strong> 내 댓글 단 계정의 최근 게시물에 댓글</li>
+                <li><strong>3순위:</strong> 반응 큰 게시물에 댓글 (노출 기회)</li>
+                <li><strong>4순위:</strong> 팔로워 1만+ 계정에 댓글</li>
+            </ul>
+            <h4 style="margin-top: 15px;">악플/민감 댓글 처리</h4>
+            <ul>
+                <li>악플은 차단 또는 숨기기 (답글 달지 말기!)</li>
+                <li>저격/예민한 댓글 → 차단/숨기기</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>♻️ 터진 게시물 재활용</h3>
+            <ul>
+                <li><strong>셀프 리포스트:</strong> 2~3일 뒤 리포스트로 트래픽 재유도</li>
+                <li><strong>그대로 재업:</strong> 한 달 뒤 동일 글 새로 올리기</li>
+                <li><strong>변형 재업:</strong> 제목/앵글만 바꿔서 새 글처럼</li>
+                <li><strong>리스트 쪼개기:</strong> TOP 5에서 반응 좋은 1개 → 새 게시물로 확장</li>
+            </ul>
+            <p style="color: var(--success);">이미 검증된 글 = 다시 터질 확률 높음! 새 글만 쓰려고 고민하지 말 것</p>
+        </div>
+    </div>
+
+    <!-- 실전 템플릿 -->
+    <div id="s2-t6" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">📋</span>
+            <h2>실전 게시물 템플릿</h2>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">"글쓰기가 막막할 때 → 빈칸만 채워서 올려라"</p>
+
+        <div class="card">
+            <h3>📖 템플릿 1: 스토리텔링형</h3>
+            <div class="template-box">[후킹] 솔직히 말할게. 나도 처음엔 ________이었다.
+
+[공감] ________ 때문에 매일 고민했었어.
+"나만 이런가?" 싶었는데...
+
+[전환] 그런데 ________을/를 시작하고 나서
+________이/가 완전히 달라졌어.
+
+[사례] 실제로 ________ 만에 ________ 달성했거든.
+
+[CTA] 비슷한 고민 있는 사람? 댓글로 알려줘.
+→ 놓치기 싫으면 팔로우 해둬!</div>
+        </div>
+
+        <div class="card">
+            <h3>📊 템플릿 2: 지시형 (넘버링)</h3>
+            <div class="template-box">[후킹] ________하는 사람이라면 반드시 알아야 할 ○가지
+
+[본문]
+1. ________
+   → ________ (이유/효과)
+
+2. ________
+   → ________
+
+3. ________
+   → ________
+
+[CTA] 저장해두고 하나씩 실천해봐.
+→ 팔로우하면 매일 받아볼 수 있어!</div>
+        </div>
+
+        <div class="card">
+            <h3>🔥 템플릿 3: 핫토픽형 (토론)</h3>
+            <div class="template-box">[후킹] 진심으로 궁금한데,
+
+[주제] ________하는 거 나만 이상하다고 생각해?
+아니면 ________이/가 맞는 건가?
+
+[내 의견] 개인적으로는 ________라고 생각하거든.
+이유는 ________
+
+[CTA] 쓰친들은 어떻게 생각해?
+댓글로 의견 남겨줘!</div>
+        </div>
+
+        <div class="card">
+            <h3>💭 템플릿 4: 공감/의견형</h3>
+            <div class="template-box">[후킹] 솔직히 말할게.
+
+[의견] 나는 ________이/가 ________라고 생각해.
+이유는 ________거든.
+
+[경험] 실제로 나도 ________했었는데,
+________을/를 겪고 나니까 확신이 생겼어.
+
+[CTA] 댓글로 너의 생각 알려줘!</div>
+        </div>
+
+        <div class="card">
+            <h3>🚀 템플릿 5: 팔로워 모으기형</h3>
+            <div class="template-box">[후킹] ________에 관심 있는 사람?
+
+[자기소개] 나는 ________하는 사람이야.
+지금까지 ________ (성과/경험)
+
+[제안] 여기서 앞으로 이런 정보 나눌 거야:
+✓ ________
+✓ ________
+✓ ________
+
+[CTA] 이미 ○○명이 함께하고 있어.
+팔로우하고 같이 성장하자!</div>
+        </div>
+
+        <div class="tip-box">
+            <h4>💡 템플릿 활용 팁</h4>
+            <p>템플릿은 뼈대일 뿐 → 자신의 말투와 톤으로 자연스럽게 변형. GPT 티 나지 않게 주의! 이모티콘 남발 X, 딱딱한 표현 X</p>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STEP 3: 수익화 -->
+<!-- ============================================================ -->
+<div id="s3" class="step-content">
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('s3','s3-t1',this)">전환 글쓰기</button>
+        <button class="tab-btn" onclick="switchTab('s3','s3-t2',this)">수익화 7가지 루트</button>
+        <button class="tab-btn" onclick="switchTab('s3','s3-t3',this)">빌드업 & 신뢰</button>
+        <button class="tab-btn" onclick="switchTab('s3','s3-t4',this)">SNS 연계 & 툴</button>
+    </div>
+
+    <!-- 전환 글쓰기 -->
+    <div id="s3-t1" class="tab-content active">
+        <div class="section-header">
+            <span class="section-icon">💰</span>
+            <h2>팔로워를 구매자로 바꾸는 전환 글쓰기</h2>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">"조회수 올리는 글쓰기와 판매하는 글쓰기는 완전히 다르다"</p>
+
+        <div class="card" style="border-left: 6px solid var(--step3);">
+            <h3 style="color: var(--step3);">전환 글의 3요소</h3>
+            <table>
+                <tr><th>요소</th><th>핵심</th><th>예시</th></tr>
+                <tr><td><strong>제목</strong></td><td>터지는 제목 + 권위 부여</td><td>"00년차 000입니다"</td></tr>
+                <tr><td><strong>본문</strong></td><td>AI 초안 + 템플릿</td><td>스토리 → 정보 → 전환 구조</td></tr>
+                <tr><td><strong>전환</strong></td><td>전환 고정멘트</td><td>카톡방/상담/구매 링크 유도</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>🎯 전환 멘트(CTA) 5줄 공식</h3>
+            <p style="margin-bottom: 10px;"><strong style="color: var(--danger);">원칙: 전환 목표는 딱 1개만!</strong> (2개면 전환율 급락)</p>
+            <table>
+                <tr><th>#</th><th>역할</th><th>예시</th></tr>
+                <tr><td>1줄</td><td>권위/상황</td><td>"누가, 어떤 성과로 말하는지"</td></tr>
+                <tr><td>2줄</td><td>제안</td><td>"무엇을 주는지"</td></tr>
+                <tr><td>3줄</td><td>혜택</td><td>"받으면 뭐가 좋아지는지"</td></tr>
+                <tr><td>4줄</td><td>제한</td><td>"언제까지/몇 명/조건" (희소성)</td></tr>
+                <tr><td>5줄</td><td>행동</td><td>링크 클릭 / 댓글 / 오픈채팅 중 1개</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>📌 목적별 CTA 구조</h3>
+            <div style="background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--accent);">
+                <h4 style="margin-top:0; color: var(--accent);">팔로우 유도</h4>
+                <p>권위/상황 + 다음 편 예고 + 팔로우 요청</p>
+            </div>
+            <div style="background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--step2);">
+                <h4 style="margin-top:0; color: var(--step2);">댓글 유도</h4>
+                <p>혜택 + 댓글 키워드 1개 + 고정댓글/DM 안내</p>
+            </div>
+            <div style="background: var(--bg); padding: 15px; border-radius: 8px; border-left: 4px solid var(--step3);">
+                <h4 style="margin-top:0; color: var(--step3);">카톡방/상담 유도</h4>
+                <p>권위 + 혜택 + 제한 + 링크/오픈채팅</p>
+            </div>
+        </div>
+
+        <div class="tip-box warn">
+            <h4>❌ 금지 패턴</h4>
+            <p>링크 2개 이상 / 목표 2개 / 모호한 혜택 / 제한 없는 문장</p>
+        </div>
+    </div>
+
+    <!-- 수익화 7가지 루트 -->
+    <div id="s3-t2" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">💎</span>
+            <h2>수익화 7가지 루트</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step3);">
+            <h3>전체 수익화 루트</h3>
+            <table>
+                <tr><th>루트</th><th>설명</th><th>난이도</th></tr>
+                <tr><td><strong>① 일회성 상품 ⭐</strong></td><td>전자책/VOD/노션 템플릿 판매</td><td>초보 추천</td></tr>
+                <tr><td><strong>② 구독형 상품</strong></td><td>월 구독 커뮤니티/멤버십</td><td>중급</td></tr>
+                <tr><td><strong>③ 체험단</strong></td><td>제품 체험 후 게시물 업로드</td><td>초보 가능</td></tr>
+                <tr><td><strong>③-2 광고 협찬</strong></td><td>광고주 제품 홍보 → 물건+광고비</td><td>중급</td></tr>
+                <tr><td><strong>④ 제휴 마케팅 ⭐</strong></td><td>다른 사람 상품 소개 → 수수료</td><td>초보 추천</td></tr>
+                <tr><td><strong>⑤ 조회수 수익</strong></td><td>인스타/X 조회수 보너스</td><td>상급</td></tr>
+                <tr><td><strong>⑥ 유튜브 음원</strong></td><td>스레드 캡처 → 쇼츠 업로드</td><td>중급</td></tr>
+                <tr><td><strong>⑦ 오프라인 행사</strong></td><td>스레드 모집 → 참가비 수익</td><td>상급</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>📊 초보자 수익화 순서</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card" style="border-color: var(--step2);">
+                    <div class="kpi-value" style="font-size: 1rem; color: var(--step2);">1단계</div>
+                    <div class="kpi-label">팔로워 적을 때: 일회성 상품 + 제휴</div>
+                </div>
+                <div class="kpi-card" style="border-color: var(--step3);">
+                    <div class="kpi-value" style="font-size: 1rem; color: var(--step3);">2단계</div>
+                    <div class="kpi-label">팔로워 늘면: 구독형 + 체험단/광고</div>
+                </div>
+                <div class="kpi-card" style="border-color: var(--danger);">
+                    <div class="kpi-value" style="font-size: 1rem; color: var(--danger);">3단계</div>
+                    <div class="kpi-label">성장 후: 조회수 수익 + 오프라인</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔄 퍼널 마케팅 구조</h3>
+            <table>
+                <tr><th>단계</th><th>내용</th><th>핵심 전략</th></tr>
+                <tr><td>1단계</td><td>메인 광고판 (트래픽)</td><td>SNS 다양하게 활용</td></tr>
+                <tr><td>2단계</td><td>리드 수집 (고객 정보)</td><td>이메일/카카오 채널 친구추가 유도</td></tr>
+                <tr><td>3단계</td><td>구매 전환</td><td>영향력+인기 어필+프로세스 이코노미</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 빌드업 & 신뢰 -->
+    <div id="s3-t3" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🏗️</span>
+            <h2>빌드업 & 신뢰 구축</h2>
+        </div>
+
+        <div class="card" style="border: 2px solid var(--step3); background: rgba(240,136,62,0.05);">
+            <h3 style="color: var(--step3);">빌드업 없이 갑자기 판매 글을 올리면 무조건 실패한다</h3>
+            <h4>광고 게시물 빌드업</h4>
+            <ul>
+                <li>먼저 "광고를 받았다"는 게시물을 올린다 → 좋아요/댓글 유도</li>
+                <li>한두 시간 뒤 실제 광고 게시물 올린다 → 이전 글 댓글에 링크</li>
+                <li>이전 게시물 본 사람들이 광고글까지 봄 → 조회수 폭발</li>
+            </ul>
+            <h4>내 상품 홍보 빌드업</h4>
+            <ul>
+                <li>"오늘 큰 거 하나 오는데 다들 기대해라" 빌드업 먼저</li>
+                <li>상품 준비 과정을 노출 → 가장 쉬운 빌드업</li>
+                <li>비율: 가치 제공 80% + 홍보 20% 유지</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🤝 신뢰 쌓기 전략 5가지</h3>
+            <p style="margin-bottom: 12px;">"사람들은 잘하는 사람에게서 산다. 잘하는 것처럼 보이는 사람에게서도 산다."</p>
+            <ul>
+                <li><strong>① 고객 후기가 전환의 전부다</strong> — 글, 캡처, 영상 후기 다양하게 확보 → 리포스트/인용</li>
+                <li><strong>② 잘나가는 모습을 보여줘라</strong> — "문의가 많이 와서 바빠요" → 인기 있는 느낌</li>
+                <li><strong>③ 이 업에 진심인 모습</strong> — 성장 과정 공유, 전문가다운 인사이트</li>
+                <li><strong>④ 스레드에 후기 이벤트</strong> — 무료 컨설팅 → 대신 후기 요청. 비용 대비 효과 최고</li>
+                <li><strong>⑤ 커피챗 + 권위자 활용</strong> — 나보다 권위 있는 사람이 언급 → 팔로워 유입</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>전환 글쓰기 7가지 패턴</h3>
+            <table>
+                <tr><th>#</th><th>패턴</th><th>설명</th></tr>
+                <tr><td>1</td><td>스토리와 엮기</td><td>홍보 + 스토리 결합</td></tr>
+                <tr><td>2</td><td>빌드업 게시물</td><td>판매 전 전문성/성과 노출</td></tr>
+                <tr><td>3</td><td>상품 판매</td><td>직접적 판매 유도</td></tr>
+                <tr><td>4</td><td>자료 나눔 ⭐</td><td>무료 자료로 신뢰 + 링크 유도 (초반 필수)</td></tr>
+                <tr><td>5</td><td>이벤트</td><td>무료 상담/할인/경품</td></tr>
+                <tr><td>6</td><td>고객 후기 활용</td><td>후기 리포스트/인용</td></tr>
+                <tr><td>7</td><td>"우리 인기 많아"</td><td>마감 임박, 인기 어필</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- SNS 연계 & 툴 -->
+    <div id="s3-t4" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🔗</span>
+            <h2>타 SNS 연계 & 초성장 툴</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid #E1306C;">
+            <h3 style="color: #E1306C;">인스타그램 연계</h3>
+            <ul>
+                <li>스레드 게시물 캡처 → 인스타 게시물/릴스 업로드</li>
+                <li>조회수 1만+ 터진 게시물만 가져오기 + 좋아요 수 보이게 캡처</li>
+                <li>캡처 사이즈: 1080x1350 (세로형)</li>
+                <li>인스타는 양보다 질! 하루 1개 or 주 3개</li>
+                <li>소셜 비즈: 댓글 자동 DM 발송 → 구매 링크 자동 전달</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-left: 6px solid #1DA1F2;">
+            <h3 style="color: #1DA1F2;">X(트위터) 연계</h3>
+            <ul>
+                <li>텍스트 기반 → 스레드 글 그대로 올려도 잘 터짐</li>
+                <li>커뮤니티 기능 활용 → 관심 있는 사람들에게 직접 노출</li>
+                <li>바로 조회수 수익화 가능 (조건: 3개월 노출 500만+)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🛠️ 초성장 툴</h3>
+            <table>
+                <tr><th>툴</th><th>활용법</th></tr>
+                <tr><td><strong>GPT</strong></td><td>주제 추천, 글 오류 검증, 유형별 자동 글 작성</td></tr>
+                <tr><td><strong>쓰레드 사이트</strong></td><td>1년 지표 확인, 미답변 답글 관리, 조회수 순 정렬</td></tr>
+                <tr><td><strong>미리캔버스</strong></td><td>1080x1350으로 캡처 편집 + 다운로드</td></tr>
+                <tr><td><strong>메타 비즈니스 스위트</strong></td><td>일주일치 예약 업로드, 팔로워 활동 시간 확인</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STEP 4: 벤 & 로드맵 -->
+<!-- ============================================================ -->
+<div id="s4" class="step-content">
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('s4','s4-t1',this)">벤 & 저품질</button>
+        <button class="tab-btn" onclick="switchTab('s4','s4-t2',this)">30일 로드맵</button>
+    </div>
+
+    <!-- 벤 & 저품질 -->
+    <div id="s4-t1" class="tab-content active">
+        <div class="section-header">
+            <span class="section-icon">🚨</span>
+            <h2>계정 정지 & 저품질 대처법</h2>
+        </div>
+        <p style="color: var(--danger); margin-bottom: 20px; font-weight: 600;">"열심히 키운 계정, 한순간에 날릴 수 있다 — 벤은 무조건 피해야 합니다"</p>
+
+        <div class="card" style="border: 2px solid var(--danger); background: rgba(248,81,73,0.05);">
+            <h3 style="color: var(--danger);">🚨 절대 쓰면 안 되는 벤 키워드</h3>
+            <table>
+                <tr><th>금지 키워드/행위</th><th>이유</th></tr>
+                <tr><td>"00만원 상당"</td><td rowspan="5">메타 AI가 "경제적 이익에 대한 현실성 없는 주장"으로 판단 → 즉시 삭제/벤</td></tr>
+                <tr><td>"수익 인증합니다"</td></tr>
+                <tr><td>"00만원 벌 수 있는 부업"</td></tr>
+                <tr><td>"바로 00만원 벌 수 있다"</td></tr>
+                <tr><td>매출/금액 크게 캡처된 사진</td></tr>
+            </table>
+            <div style="background: var(--bg); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                <p><strong>우회 표현:</strong> 금액 노출 대신 → "성과를 냈다", "목표를 달성했다". 금액 캡처 대신 → 후기/감사 메시지 스크린샷</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>⚡ 스레드 벤 3가지 유형</h3>
+            <table>
+                <tr><th>유형</th><th>설명</th></tr>
+                <tr><td><strong>콘텐츠 벤</strong></td><td>특정 게시물만 노출 차단/삭제</td></tr>
+                <tr><td><strong>댓글 벤</strong></td><td>댓글 노출 차단</td></tr>
+                <tr><td><strong>계정 벤</strong></td><td>계정 전체 노출 차단 또는 정지</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>📉 저품질 빠지는 행동</h3>
+            <ul>
+                <li>벤 키워드 사용 (수익 인증, 금액 강조)</li>
+                <li>게시물 자주 삭제 (<strong>삭제 대신 "보관" 처리!</strong>)</li>
+                <li>혐오/갈라치기/저격 글 작성 (신고 누적)</li>
+                <li>스팸성 활동 (무차별 팔로우, 복붙 댓글)</li>
+                <li>동일 링크 반복 게시</li>
+                <li>짧은 시간 내 과도한 활동량</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--success);">
+            <h3 style="color: var(--success);">✅ 계정 점수 높이는 방법</h3>
+            <ul>
+                <li>댓글, 답글 등 소통 활발하게</li>
+                <li>글은 삭제하지 말기 (차라리 보관으로)</li>
+                <li>혐오/갈라치기/저격 글 금지</li>
+                <li>좋은 글에는 좋아요/리포스트/댓글 아끼지 말기</li>
+                <li>도움을 주려는 마음으로 게시물 작성</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>⏱️ 활동 속도 제한 (매우 중요!)</h3>
+            <table>
+                <tr><th>항목</th><th>제한</th></tr>
+                <tr><td>처음 2주</td><td>천천히! 1,000명까지 조심조심</td></tr>
+                <tr><td>첫 1주일</td><td>홍보글 X → 일상글로 "광고 계정 아님" 보여주기</td></tr>
+                <tr><td>게시글 간격</td><td>최소 2시간 이상 / 1시간 내 4~5개 금지</td></tr>
+                <tr><td>좋아요</td><td>10분 내 10개까지</td></tr>
+                <tr><td>댓글</td><td>10분 내 3개까지</td></tr>
+                <tr><td>보안</td><td>2단계 인증 필수!</td></tr>
+            </table>
+            <p style="margin-top: 10px; color: var(--success);">팔로워 1,000명 넘으면 계정 정지 리스크 대폭 감소</p>
+        </div>
+    </div>
+
+    <!-- 30일 로드맵 -->
+    <div id="s4-t2" class="tab-content">
+        <div class="section-header">
+            <span class="section-icon">🗺️</span>
+            <h2>30일 성장 로드맵</h2>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step1);">
+            <h3 style="color: var(--step1);">1주차 (Day 1~7): 세팅 & 첫 발</h3>
+            <ul>
+                <li>Day 1: 계정 컨셉 확정 + 프로필 세팅 완료</li>
+                <li>Day 2: 벤치마킹 계정 10개 리스트업 + 맞춤 피드</li>
+                <li>Day 3: 자기소개 게시물 작성 → 프로필 고정</li>
+                <li>Day 4~7: 매일 게시물 3개 + 댓글 20개</li>
+            </ul>
+            <p style="color: var(--step1); margin-top: 8px;"><strong>목표: 첫 게시물 20개 발행</strong></p>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step2);">
+            <h3 style="color: var(--step2);">2주차 (Day 8~14): 루틴 만들기</h3>
+            <ul>
+                <li>매일 게시물 5개 + 댓글 20개 루틴화</li>
+                <li>4가지 유형 돌아가며 실험</li>
+                <li>후킹 패턴 연습 (매일 다른 패턴)</li>
+                <li>벤치마킹 계정 분석 계속</li>
+            </ul>
+            <p style="color: var(--step2); margin-top: 8px;"><strong>목표: 팔로워 300명 돌파</strong></p>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--step3);">
+            <h3 style="color: var(--step3);">3주차 (Day 15~21): 터지는 글 도전</h3>
+            <ul>
+                <li>핫토픽형/스토리텔링형 집중 작성</li>
+                <li>조회수 데이터 분석 → 잘 된 글 패턴 파악</li>
+                <li>같은 분야 크리에이터 소통 강화</li>
+            </ul>
+            <p style="color: var(--step3); margin-top: 8px;"><strong>목표: 조회수 1만+ 게시물 1개</strong></p>
+        </div>
+
+        <div class="card" style="border-left: 6px solid var(--danger);">
+            <h3 style="color: var(--danger);">4주차 (Day 22~30): 수익화 첫 도전</h3>
+            <ul>
+                <li>일회성 상품 기획 or 제휴 마케팅 시작</li>
+                <li>빌드업 게시물 3~5개 발행</li>
+                <li>전환 글쓰기로 판매 시도</li>
+                <li>무료 자료 만들어서 배포</li>
+            </ul>
+            <p style="color: var(--danger); margin-top: 8px;"><strong>목표: 팔로워 1,000명 + 첫 수익</strong></p>
+        </div>
+
+        <div class="card">
+            <h3>✅ 매일 체크리스트</h3>
+            <ul class="checklist">
+                <li>게시물 5개 작성 (4가지 유형 활용)</li>
+                <li>댓글 20개 작성 (크리에이터 소통)</li>
+                <li>벤치마킹 계정 1개 분석</li>
+                <li>글감 아이디어 3개 임시저장</li>
+                <li>모바일 가독성 체크</li>
+            </ul>
+        </div>
+
+        <div class="tip-box success">
+            <h4>💪 마지막 메시지</h4>
+            <p>"처음부터 완벽할 필요 없어. 중요한 건 <span class="hl-green">꾸준함과 실험정신</span>. 양(꾸준함) × 질(터지는 방향) = 스레드 성장"</p>
+        </div>
+    </div>
+</div>
+
+</div><!-- container -->
+
+<div style="background: var(--bg-light); border-top: 1px solid var(--border); padding: 25px 0; margin-top: 40px; text-align: center;">
+    <p style="color: var(--text-secondary); font-size: 0.85rem;">영향력연구소 — 신입 글작가 스레드 글쓰기 교육</p>
+    <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 5px;">커리큘럼 기반: 스레드 왕초보 완성 커리큘럼 (2025~2026)</p>
+</div>
+
+<script>
+function switchStep(stepId, btn, num) {
+    document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.step-btn').forEach(b => { b.className = 'step-btn'; });
+    document.getElementById(stepId).classList.add('active');
+    btn.classList.add('active-' + num);
+
+    // Reset tabs within the step
+    const stepEl = document.getElementById(stepId);
+    const tabs = stepEl.querySelectorAll('.tab-content');
+    const tabBtns = stepEl.querySelectorAll('.tab-btn');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabBtns.forEach(b => b.classList.remove('active'));
+    if (tabs.length > 0) tabs[0].classList.add('active');
+    if (tabBtns.length > 0) tabBtns[0].classList.add('active');
+}
+
+function switchTab(stepId, tabId, btn) {
+    const stepEl = document.getElementById(stepId);
+    stepEl.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    stepEl.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
+
+</body>
+</html>
