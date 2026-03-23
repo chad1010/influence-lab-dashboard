@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>biz.Influence Lab — 댓글 작성기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#3b75ff' },
+          fontFamily: { sans: ['"Pretendard"','system-ui','sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <style>
+    body { font-family: 'Pretendard', 'Apple SD Gothic Neo', system-ui, sans-serif; }
+    .nav-active { background: #eff4ff; color: #3b75ff; font-weight: 600; border-left: 2px solid #3b75ff; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:8px 16px; border-radius:8px; font-size:14px; color:#374151; cursor:pointer; transition:background .15s; border-left: 2px solid transparent; }
+    .nav-item:hover { background:#f8fafc; }
+    .nav-label { font-size:11px; font-weight:600; color:#94a3b8; padding:16px 16px 4px; letter-spacing:.5px; }
+    .card { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+    .stat-chip { display:flex; align-items:center; gap:6px; font-size:13px; color:#64748b; }
+    .stat-val { font-size:18px; font-weight:700; color:#1e293b; margin-top:2px; }
+    .badge-red { background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; border-radius:20px; font-size:12px; font-weight:700; padding:2px 10px; }
+    .badge-blue { background:#eff4ff; color:#3b75ff; border:1px solid #bfdbfe; border-radius:20px; font-size:12px; font-weight:600; padding:2px 10px; }
+    .queue-card { background:white; border:1px solid #e2e8f0; border-radius:10px; padding:14px 16px; display:flex; gap:12px; cursor:pointer; transition:all .15s; }
+    .queue-card:hover { border-color:#3b75ff; box-shadow:0 2px 12px rgba(59,117,255,.1); }
+    .unanswered-card { background:white; border:1px solid #fca5a5; border-radius:10px; padding:14px 16px; display:flex; gap:12px; cursor:pointer; transition:all .15s; }
+    .unanswered-card:hover { border-color:#dc2626; box-shadow:0 2px 12px rgba(220,38,38,.1); }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:50; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .draft-item { border:1.5px solid #e2e8f0; border-radius:8px; padding:12px; font-size:13px; line-height:1.6; cursor:pointer; transition:all .15s; }
+    .draft-item:hover { border-color:#3b75ff; background:#f8faff; }
+    .draft-item.selected { border-color:#3b75ff; background:#eff4ff; }
+    .btn-primary { background:#3b75ff; color:white; border:none; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; }
+    .btn-primary:hover { background:#2d65ef; }
+    .btn-outline { background:white; color:#374151; border:1px solid #e2e8f0; border-radius:8px; padding:8px 18px; font-size:13px; cursor:pointer; }
+    .btn-outline:hover { border-color:#3b75ff; color:#3b75ff; }
+    /* 와이어프레임 스타일 표시 */
+    .wf-label { position:absolute; top:-10px; left:8px; background:#3b75ff; color:white; font-size:10px; padding:1px 6px; border-radius:4px; font-weight:600; z-index:1; }
+    .wf-new { position:relative; }
+  </style>
+</head>
+<body class="bg-slate-50">
+
+<!-- ── 헤더 ── -->
+<header class="fixed top-0 left-0 right-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-6">
+  <div class="flex items-center gap-2">
+    <span class="font-bold text-base"><span class="text-primary">biz.</span><span class="text-slate-800">Influence Lab</span></span>
+  </div>
+  <div class="flex items-center gap-4 text-sm text-slate-600">
+    <span>관리자</span>
+    <button class="flex items-center gap-1 text-slate-500 hover:text-slate-700">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      로그아웃
+    </button>
+  </div>
+</header>
+
+<!-- ── 사이드바 ── -->
+<aside class="fixed left-0 top-14 z-20 flex h-[calc(100vh-3.5rem)] w-56 flex-col border-r border-slate-200 bg-white py-3">
+  <div class="nav-label">메인</div>
+  <a class="nav-item" onclick="showPage('dashboard')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    대시보드
+  </a>
+
+  <div class="nav-label">콘텐츠</div>
+  <a class="nav-item" onclick="showPage('write')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    글 작성
+  </a>
+  <a class="nav-item" onclick="showPage('report')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    월간리포트 생성
+  </a>
+  <a class="nav-item" onclick="showPage('archive')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+    게시물 아카이브
+  </a>
+
+  <!-- 신규: 댓글 작성기 (와이어프레임 표시) -->
+  <a class="nav-item nav-active wf-new" onclick="showPage('comments')" id="nav-comments">
+    <div class="wf-label">NEW</div>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    댓글 작성기
+    <span class="ml-auto bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">2</span>
+  </a>
+
+  <div class="nav-label">관리</div>
+  <a class="nav-item" onclick="showPage('accounts')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    스레드 계정 관리
+  </a>
+  <a class="nav-item" onclick="showPage('connect')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    스레드 계정 연동
+  </a>
+  <a class="nav-item" onclick="showPage('settings')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    설정
+  </a>
+</aside>
+
+<!-- ── 메인 컨텐츠 ── -->
+<main class="ml-56 mt-14 min-h-[calc(100vh-3.5rem)]">
+
+  <!-- 대시보드 (기존 페이지 — 참고용) -->
+  <div id="page-dashboard" class="p-6 hidden">
+    <div class="flex items-start justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">대시보드</h1>
+        <p class="text-sm text-slate-500 mt-1">연동된 Threads 계정의 실시간 성과를 확인하세요.</p>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn-outline flex items-center gap-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
+          실시간 통계 조회
+        </button>
+        <button class="btn-outline flex items-center gap-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
+          수동 통계 갱신(Batch)
+        </button>
+      </div>
+    </div>
+    <!-- 계정 카드 -->
+    <div class="card mb-4" style="border:2px solid #3b75ff20; outline: 2px solid #3b75ff40; border-radius:12px;">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-violet-500 flex items-center justify-center text-white font-bold">N</div>
+          <div>
+            <div class="font-semibold text-slate-800">@neogul.wiki</div>
+            <div class="text-xs text-primary">토큰 56일 남음</div>
+          </div>
+        </div>
+        <div class="text-sm text-slate-500">팔로워 <span class="font-bold text-slate-800">-</span></div>
+      </div>
+      <div class="grid grid-cols-5 gap-4">
+        <div><div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>조회수</div><div class="stat-val">233</div></div>
+        <div><div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>좋아요</div><div class="stat-val">-</div></div>
+        <div><div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>답글</div><div class="stat-val">-</div></div>
+        <div><div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>리포스트</div><div class="stat-val">-</div></div>
+        <div><div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>게시물 수</div><div class="stat-val">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────── -->
+  <!-- 댓글 작성기 페이지 (신규)                   -->
+  <!-- ─────────────────────────────────────────── -->
+  <div id="page-comments" class="p-6">
+
+    <!-- 페이지 헤더 -->
+    <div class="flex items-start justify-between mb-6">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <h1 class="text-2xl font-bold text-slate-800">댓글 작성기</h1>
+          <span class="badge-blue">목업</span>
+        </div>
+        <p class="text-sm text-slate-500">우선순위 큐를 확인하고 AI 초안으로 빠르게 댓글을 달아보세요.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- 오늘 카운터 -->
+        <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-4 py-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b75ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="text-sm text-slate-500">오늘 댓글</span>
+          <span class="font-bold text-slate-800">15</span>
+          <span class="text-slate-400">/</span>
+          <span class="text-sm text-slate-500">20</span>
+          <div class="w-16 h-1.5 bg-slate-100 rounded-full ml-1">
+            <div class="h-1.5 bg-primary rounded-full" style="width:75%"></div>
+          </div>
+        </div>
+        <!-- 계정 선택 -->
+        <select class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:outline-none focus:border-primary">
+          <option>@neogul.wiki</option>
+          <option>@threadsrank</option>
+        </select>
+        <!-- 새로고침 -->
+        <button class="btn-primary flex items-center gap-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
+          새로고침
+        </button>
+        <button class="btn-outline flex items-center gap-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          URL 추가
+        </button>
+      </div>
+    </div>
+
+    <!-- 우선순위 필터 탭 -->
+    <div class="flex gap-1 bg-slate-100 rounded-lg p-1 w-fit mb-5">
+      <button onclick="setFilter('all')" id="f-all" class="px-3 py-1.5 rounded-md text-sm font-medium bg-white text-slate-800 shadow-sm">전체 <span class="text-xs text-slate-400 ml-0.5">9</span></button>
+      <button onclick="setFilter('1')" id="f-1" class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700">🔴 미답글 <span class="text-xs font-bold text-red-500 ml-0.5">2</span></button>
+      <button onclick="setFilter('2')" id="f-2" class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700">🟠 2순위</button>
+      <button onclick="setFilter('3')" id="f-3" class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700">🟡 3순위</button>
+      <button onclick="setFilter('4')" id="f-4" class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700">🟢 4순위</button>
+      <button onclick="setFilter('5')" id="f-5" class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700">🔵 5순위</button>
+    </div>
+
+    <!-- 🔴 미답글 섹션 -->
+    <div id="section-unanswered" class="mb-5">
+      <div class="flex items-center gap-2 px-4 py-3 rounded-t-xl" style="background:#fff1f2; border:1.5px solid #fca5a5; border-bottom:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="font-bold text-red-700 text-sm">미답글 댓글</span>
+        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">2</span>
+        <span class="text-xs text-red-400 ml-1">내 게시물에 달린 댓글 — 먼저 답글하기</span>
+      </div>
+      <div class="flex flex-col gap-2 p-3 rounded-b-xl" style="background:#fff8f8; border:1.5px solid #fca5a5; border-top:none;">
+
+        <!-- 미답글 카드 1 -->
+        <div class="unanswered-card" onclick="openModal(1)">
+          <div class="w-2 h-2 rounded-full bg-red-500 mt-1.5 flex-shrink-0"></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-semibold text-sm text-slate-800">💬 @부동산고민중</span>
+              <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">내 게시물 답글</span>
+              <span class="text-xs text-slate-400 ml-auto">3분 전</span>
+            </div>
+            <div class="text-sm text-red-600 italic mb-1.5">"혹시 갭투자 지금도 괜찮을까요? 좀 더 알고 싶어요"</div>
+            <div class="text-xs text-slate-400 bg-slate-50 border border-slate-100 rounded px-2 py-1.5">
+              <span class="font-medium text-slate-500">원 게시물:</span> 요즘 부동산 시장 어떻게 보세요? 저는 좀 관망 중인데...
+            </div>
+          </div>
+          <div class="flex flex-col gap-2 flex-shrink-0">
+            <button class="btn-primary text-xs py-1.5 px-3" onclick="event.stopPropagation(); openModal(1)">답글 달기</button>
+            <button class="btn-outline text-xs py-1.5 px-3">건너뛰기</button>
+          </div>
+        </div>
+
+        <!-- 미답글 카드 2 -->
+        <div class="unanswered-card" onclick="openModal(2)">
+          <div class="w-2 h-2 rounded-full bg-red-500 mt-1.5 flex-shrink-0"></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-semibold text-sm text-slate-800">💬 @공구초보자</span>
+              <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">내 게시물 답글</span>
+              <span class="text-xs text-slate-400 ml-auto">27분 전</span>
+            </div>
+            <div class="text-sm text-red-600 italic mb-1.5">"저도 이번 달부터 공구 시작했는데 생각보다 어렵네요ㅠ"</div>
+            <div class="text-xs text-slate-400 bg-slate-50 border border-slate-100 rounded px-2 py-1.5">
+              <span class="font-medium text-slate-500">원 게시물:</span> 월급만으로는 한계가 있더라고요. 부업 시작하려는데 뭐가 좋을까요?
+            </div>
+          </div>
+          <div class="flex flex-col gap-2 flex-shrink-0">
+            <button class="btn-primary text-xs py-1.5 px-3" onclick="event.stopPropagation(); openModal(2)">답글 달기</button>
+            <button class="btn-outline text-xs py-1.5 px-3">건너뛰기</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 나머지 큐 구분선 -->
+    <div class="text-xs font-semibold text-slate-400 py-2 border-t border-slate-200 mb-3 tracking-wide">나머지 댓글 큐</div>
+
+    <!-- 일반 큐 -->
+    <div class="flex flex-col gap-2" id="normal-queue">
+
+      <!-- 2순위 -->
+      <div class="queue-card" onclick="openModal(3)">
+        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#f97316"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-semibold text-sm">@justgo_fan</span>
+            <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">댓글 단 계정 최신글</span>
+          </div>
+          <p class="text-sm text-slate-600 line-clamp-2">공동구매 벤더사업 하면서 느낀 것들 공유해볼게요. 처음엔 정말 몰랐던 것들이 많았는데...</p>
+        </div>
+        <div class="flex flex-col gap-2 flex-shrink-0">
+          <button class="btn-primary text-xs py-1.5 px-3">댓글 작성</button>
+          <button class="btn-outline text-xs py-1.5 px-3">건너뛰기</button>
+        </div>
+      </div>
+
+      <!-- 3순위 -->
+      <div class="queue-card" onclick="openModal(4)">
+        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#eab308"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-semibold text-sm">@trendy_threads</span>
+            <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">알고리즘 인기글</span>
+            <span class="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded">좋아요 2.3k</span>
+          </div>
+          <p class="text-sm text-slate-600 line-clamp-2">요즘 직장인들 이거 많이 하더라. 공구 시작했는데 한 달 만에 월 200 됐음</p>
+        </div>
+        <div class="flex flex-col gap-2 flex-shrink-0">
+          <button class="btn-primary text-xs py-1.5 px-3">댓글 작성</button>
+          <button class="btn-outline text-xs py-1.5 px-3">건너뛰기</button>
+        </div>
+      </div>
+
+      <!-- 4순위 -->
+      <div class="queue-card" onclick="openModal(5)">
+        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#22c55e"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-semibold text-sm">@yang_sam_school</span>
+            <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">타겟 계정</span>
+            <span class="text-xs bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 rounded">팔로워 5.2만</span>
+          </div>
+          <p class="text-sm text-slate-600 line-clamp-2">나 사실 한 번 죽었다가 살아났어. 그때 이후로 삶을 대하는 방식이 달라졌지</p>
+        </div>
+        <div class="flex flex-col gap-2 flex-shrink-0">
+          <button class="btn-primary text-xs py-1.5 px-3">댓글 작성</button>
+          <button class="btn-outline text-xs py-1.5 px-3">건너뛰기</button>
+        </div>
+      </div>
+
+      <!-- 5순위 -->
+      <div class="queue-card" onclick="openModal(6)">
+        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#3b82f6"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-semibold text-sm">@side_hustle_kr</span>
+            <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">단골 소통 계정</span>
+          </div>
+          <p class="text-sm text-slate-600 line-clamp-2">솔직히 요즘 너무 행복해. 하고 싶은 거 하면서 돈도 버니까</p>
+        </div>
+        <div class="flex flex-col gap-2 flex-shrink-0">
+          <button class="btn-primary text-xs py-1.5 px-3">댓글 작성</button>
+          <button class="btn-outline text-xs py-1.5 px-3">건너뛰기</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ── 댓글 작성 모달 ── -->
+<div id="comment-modal" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+    <!-- 모달 헤더 -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <div>
+        <div class="font-bold text-slate-800 text-base" id="modal-title">미답글 · @부동산고민중</div>
+        <div class="text-xs text-slate-400 mt-0.5">내 게시물 댓글 답글</div>
+      </div>
+      <button onclick="document.getElementById('comment-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
+    </div>
+
+    <!-- 게시물 미리보기 -->
+    <div class="px-5 pt-4">
+      <div class="bg-slate-50 rounded-xl p-3 text-sm">
+        <div class="font-semibold text-slate-700 mb-1">@justgo (내 게시물)</div>
+        <div class="text-slate-600">요즘 부동산 시장 어떻게 보세요? 저는 좀 관망 중인데</div>
+        <div class="mt-2 bg-white border border-slate-200 rounded-lg p-2.5">
+          <span class="font-semibold text-red-600">💬 @부동산고민중:</span>
+          <span class="text-slate-600 ml-1">"혹시 갭투자 지금도 괜찮을까요? 좀 더 알고 싶어요"</span>
+        </div>
+        <a href="#" class="text-xs text-primary mt-1.5 block">↗ Threads에서 보기</a>
+      </div>
+    </div>
+
+    <!-- AI 초안 -->
+    <div class="px-5 pt-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-slate-700">AI 초안</span>
+        <button class="text-xs text-primary border border-primary/30 bg-primary/5 px-2.5 py-1 rounded-lg hover:bg-primary/10">↻ 재생성</button>
+      </div>
+      <div class="flex flex-col gap-2" id="drafts-list">
+        <div class="draft-item selected" onclick="selectDraft(this)">지금 시장에서 갭투자는 지역 선별이 정말 중요해요. 수도권이냐 지방이냐에 따라 전략이 달라지더라고요.</div>
+        <div class="draft-item" onclick="selectDraft(this)">갭투자 지금도 하시는 분들 있는데, 공실 리스크 꼭 체크해보시고 들어가세요. 저도 고민 많이 했거든요.</div>
+        <div class="draft-item" onclick="selectDraft(this)">관심 가지시는 거 좋은데 금리 흐름이랑 전세 수요 먼저 확인해보시면 도움이 될 것 같아요!</div>
+      </div>
+    </div>
+
+    <!-- 최종 편집 -->
+    <div class="px-5 pt-3 pb-1">
+      <label class="text-xs font-semibold text-slate-500 block mb-1.5">최종 댓글</label>
+      <textarea id="final-comment" rows="3"
+        class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:border-primary transition-colors"
+        placeholder="댓글을 선택하거나 직접 작성하세요">지금 시장에서 갭투자는 지역 선별이 정말 중요해요. 수도권이냐 지방이냐에 따라 전략이 달라지더라고요.</textarea>
+      <div class="text-right text-xs text-slate-400 mt-1" id="char-count">45자</div>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 mt-2">
+      <label class="flex items-center gap-2 text-sm text-slate-500 cursor-pointer">
+        <input type="checkbox" class="rounded" /> 이벤트 글 (한도 미적용)
+      </label>
+      <div class="flex gap-2">
+        <button class="btn-outline" onclick="document.getElementById('comment-modal').classList.add('hidden')">건너뛰기</button>
+        <button class="btn-primary flex items-center gap-1.5">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          게시
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 페이지 전환
+  function showPage(name) {
+    document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+    const p = document.getElementById('page-' + name);
+    if (p) p.classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('nav-active'));
+    const nav = document.getElementById('nav-' + name);
+    if (nav) nav.classList.add('nav-active');
+  }
+
+  // 필터
+  function setFilter(val) {
+    document.querySelectorAll('[id^="f-"]').forEach(b => {
+      b.className = 'px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700';
+    });
+    document.getElementById('f-' + val).className = 'px-3 py-1.5 rounded-md text-sm font-medium bg-white text-slate-800 shadow-sm';
+  }
+
+  // 모달
+  function openModal(id) {
+    document.getElementById('comment-modal').classList.remove('hidden');
+  }
+  function closeModal(e) {
+    if (e.target === document.getElementById('comment-modal')) {
+      document.getElementById('comment-modal').classList.add('hidden');
+    }
+  }
+
+  // 초안 선택
+  function selectDraft(el) {
+    document.querySelectorAll('.draft-item').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('final-comment').value = el.innerText;
+    document.getElementById('char-count').textContent = el.innerText.length + '자';
+  }
+
+  // 글자수
+  document.getElementById('final-comment').addEventListener('input', function() {
+    document.getElementById('char-count').textContent = this.value.length + '자';
+  });
+
+  // 초기 페이지
+  showPage('comments');
+</script>
+</body>
+</html>
